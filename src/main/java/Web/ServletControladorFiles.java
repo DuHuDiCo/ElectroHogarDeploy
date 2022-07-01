@@ -148,7 +148,7 @@ public class ServletControladorFiles extends HttpServlet {
     private int leerTxt(String nombre) throws FileNotFoundException, IOException, ClassNotFoundException, SQLException {
         int obtenerIdTxt = new DaoFiles().obtenerIdFileTxt(nombre);
         String linea = "";
-        String delimitante = "|";
+        String delimitante = "\\|";
         String ruta = "/opt/glassfish/glassfish/domains/domain1/applications/ROOT/archivos/txt/" + nombre;
 
         Obligaciones obligacion = null;
