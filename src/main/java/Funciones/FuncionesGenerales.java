@@ -88,6 +88,7 @@ public class FuncionesGenerales {
         String ciudad = new DaoUsuarios().obtenerSedeUsuario(email);
         String nombre = new DaoConsignaciones().obtenerNombreUsuario(email);
         int random = (int) (Math.random() * 100);
+        //J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\reportes\\reporte_" + fecha + "_" + random + "_" + cargo + ".pdf
         String ruta = "/opt/glassfish/glassfish/domains/domain1/applications/ROOT/archivos/reportes/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
 
         try {

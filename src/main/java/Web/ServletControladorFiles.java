@@ -37,7 +37,7 @@ import javax.servlet.http.Part;
 @MultipartConfig
 @WebServlet(urlPatterns = {"/ServletControladorFiles"})
 public class ServletControladorFiles extends HttpServlet {
-
+    //J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\txt\\
     private final String rutaFiles = "/opt/glassfish/glassfish/domains/domain1/applications/ROOT/archivos/txt/";
     private final File uploads = new File(rutaFiles);
     private final String[] extens = {".txt"};
@@ -149,6 +149,7 @@ public class ServletControladorFiles extends HttpServlet {
         int obtenerIdTxt = new DaoFiles().obtenerIdFileTxt(nombre);
         String linea = "";
         String delimitante = "\\|";
+        //J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\txt\\" + nombre
         String ruta = "/opt/glassfish/glassfish/domains/domain1/applications/ROOT/archivos/txt/" + nombre;
 
         Obligaciones obligacion = null;
