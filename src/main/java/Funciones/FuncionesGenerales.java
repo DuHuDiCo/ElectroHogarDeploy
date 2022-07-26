@@ -1,23 +1,40 @@
 package Funciones;
 
 import Datos.DaoConsignaciones;
+import Datos.DaoConsignaciones2;
+import Datos.DaoFiles;
 import Datos.DaoRoles;
 import Datos.DaoUsuarios;
 import Dominio.Consignacion;
+import com.itextpdf.text.pdf.BaseFont;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Properties;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -88,8 +105,23 @@ public class FuncionesGenerales {
         String ciudad = new DaoUsuarios().obtenerSedeUsuario(email);
         String nombre = new DaoConsignaciones().obtenerNombreUsuario(email);
         int random = (int) (Math.random() * 100);
-        //J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\reportes\\reporte_" + fecha + "_" + random + "_" + cargo + ".pdf
-        String ruta = "/opt/glassfish/glassfish/domains/domain1/applications/ROOT/archivos/reportes/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+        String ruta = null;
+        switch(cargo){
+            case "Administrador":
+                ruta = "J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\reportes\\Admin\\reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+            break;
+            case "Cartera":
+                ruta = "J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\reportes\\Cartera\\reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+            break;
+            case "Contabilidad":
+                ruta = "J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\reportes\\Contabilidad\\reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+            break;
+            case "Caja":
+                ruta = "J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\reportes\\Caja\\reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+            break;
+        }
+        
+         
 
         try {
             try (PDDocument doc = new PDDocument()) {
@@ -100,8 +132,8 @@ public class FuncionesGenerales {
                 int initX = 20;
                 int initY = height - 150;
                 int cellHeight = 20;
-                int cellWidth = 70;
-                int colCount = 8;
+                int cellWidth = 95;
+                int colCount = 6;
 
                 try (PDPageContentStream contens = new PDPageContentStream(doc, page)) {
                     nuevaLinea(titulo, 220, 750, contens, PDType1Font.HELVETICA_BOLD, 18);
@@ -127,20 +159,34 @@ public class FuncionesGenerales {
                                     contens.beginText();
                                     contens.newLineAtOffset(initX, initY - cellHeight + 10);
                                     contens.setFont(PDType1Font.HELVETICA_BOLD, 12);
+
                                     String cabecerosTabla = retornarCabeceros(j);
                                     contens.showText(cabecerosTabla);
                                     contens.endText();
                                     initX += cellWidth;
                                 } else {
-                                    contens.addRect(initX, initY, cellWidth, -cellHeight);
+                                    if (j == 2) {
+                                        contens.addRect(initX, initY, cellWidth, -cellHeight);
 
-                                    contens.beginText();
-                                    contens.newLineAtOffset(initX + 10, initY - cellHeight + 10);
-                                    contens.setFont(PDType1Font.HELVETICA_BOLD, 12);
-                                    String cabecerosTabla = retornarCabeceros(j);
-                                    contens.showText(cabecerosTabla);
-                                    contens.endText();
-                                    initX += cellWidth;
+                                        contens.beginText();
+                                        contens.newLineAtOffset(initX - 35, initY - cellHeight + 10);
+                                        contens.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                                        String cabecerosTabla = retornarCabeceros(j);
+                                        contens.showText(cabecerosTabla);
+                                        contens.endText();
+                                        initX += cellWidth;
+                                    } else {
+                                        contens.addRect(initX, initY, cellWidth, -cellHeight);
+
+                                        contens.beginText();
+                                        contens.newLineAtOffset(initX + 20, initY - cellHeight + 10);
+                                        contens.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                                        String cabecerosTabla = retornarCabeceros(j);
+                                        contens.showText(cabecerosTabla);
+                                        contens.endText();
+                                        initX += cellWidth;
+                                    }
+
                                 }
 
                             }
@@ -161,15 +207,28 @@ public class FuncionesGenerales {
                                     contens.endText();
                                     initX += cellWidth;
                                 } else {
-                                    contens.addRect(initX, initY, cellWidth, -cellHeight);
+                                    if (j == 2) {
+                                        contens.addRect(initX, initY, cellWidth, -cellHeight);
 
-                                    contens.beginText();
-                                    contens.newLineAtOffset(initX + 10, initY - 10);
-                                    contens.setFont(PDType1Font.TIMES_ROMAN, 12);
-                                    String body = retornarBody(j, consig.get(i - 1));
-                                    contens.showText(body);
-                                    contens.endText();
-                                    initX += cellWidth;
+                                        contens.beginText();
+                                        contens.newLineAtOffset(initX - 35, initY - 10);
+                                        contens.setFont(PDType1Font.TIMES_ROMAN, 12);
+                                        String body = retornarBody(j, consig.get(i - 1));
+                                        contens.showText(body);
+                                        contens.endText();
+                                        initX += cellWidth;
+                                    } else {
+                                        contens.addRect(initX, initY, cellWidth, -cellHeight);
+
+                                        contens.beginText();
+                                        contens.newLineAtOffset(initX + 20, initY - 10);
+                                        contens.setFont(PDType1Font.TIMES_ROMAN, 12);
+                                        String body = retornarBody(j, consig.get(i - 1));
+                                        contens.showText(body);
+                                        contens.endText();
+                                        initX += cellWidth;
+                                    }
+
                                 }
 
                             }
@@ -191,15 +250,27 @@ public class FuncionesGenerales {
                                     contens.endText();
                                     initX += cellWidth;
                                 } else {
-                                    contens.addRect(initX, initY, cellWidth, -cellHeight);
+                                    if (j == 2) {
+                                        contens.addRect(initX, initY, cellWidth, -cellHeight);
 
-                                    contens.beginText();
-                                    contens.newLineAtOffset(initX + 10, initY - 10);
-                                    contens.setFont(PDType1Font.TIMES_ROMAN, 12);
-                                    String body = retornarBody(j, consig.get(i - 1));
-                                    contens.showText(body);
-                                    contens.endText();
-                                    initX += cellWidth;
+                                        contens.beginText();
+                                        contens.newLineAtOffset(initX - 35, initY - 10);
+                                        contens.setFont(PDType1Font.TIMES_ROMAN, 12);
+                                        String body = retornarBody(j, consig.get(i - 1));
+                                        contens.showText(body);
+                                        contens.endText();
+                                        initX += cellWidth;
+                                    } else {
+                                        contens.addRect(initX, initY, cellWidth, -cellHeight);
+
+                                        contens.beginText();
+                                        contens.newLineAtOffset(initX + 20, initY - 10);
+                                        contens.setFont(PDType1Font.TIMES_ROMAN, 12);
+                                        String body = retornarBody(j, consig.get(i - 1));
+                                        contens.showText(body);
+                                        contens.endText();
+                                        initX += cellWidth;
+                                    }
                                 }
 
                             }
@@ -219,7 +290,594 @@ public class FuncionesGenerales {
         return ruta;
     }
 
+    public static String generarPdfCaja(List<Consignacion> con, String email) throws ClassNotFoundException, FileNotFoundException, IOException, SQLException {
+        String titulo = "Reporte de Consignaciones";
+        Date fecha = obtenerFechaServer("yyyy-MM-dd");
+        String fechaHora = fechaDateTime();
+        String cargo = new DaoRoles().obtenerRolUsuario(email);
+        String ciudad = new DaoUsuarios().obtenerSedeUsuario(email);
+        String nombre = new DaoConsignaciones().obtenerNombreUsuario(email);
+        int random = (int) (Math.random() * 100);
+        String ruta = "J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\reportes\\Caja\\reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+
+        float heightDoc = 792;
+        float widthDoc = 612;
+        float margen = (float) 14.17;
+        float imageWidth = (float) 277.8;
+        float imageHeight = (float) 226.77;
+        int colums = 2;
+        int rows = 2;
+        float positionX = heightDoc - margen - imageHeight;
+        float positionY = margen;
+        float datos = (float) 140.89;
+
+        try {
+            try (PDDocument doc = new PDDocument()) {
+
+                if (con.size() >= 5) {
+                    PDPage blanckPage = null;
+                    int cantidad = con.size();
+                    int numeroPaginas = (int) (cantidad / 4) + 1;
+                    int list = 0;
+                    int count = 0;
+                    for (int i = 0; i < numeroPaginas; i++) {
+                        blanckPage = new PDPage();
+                        doc.addPage(blanckPage);
+                        if (i < numeroPaginas) {
+                            Consignacion co = con.get(count);
+                            Consignacion co2 = con.get(count + 1);
+                            Consignacion co3 = con.get(count + 2);
+                            Consignacion co4 = con.get(count + 3);
+                            count += 4;
+                            int idFile = new DaoFiles().obtenerIdFileImg(co.getIdConsignacion());
+                            int idFile2 = new DaoFiles().obtenerIdFileImg(co2.getIdConsignacion());
+                            int idFile3 = new DaoFiles().obtenerIdFileImg(co3.getIdConsignacion());
+                            int idFile4 = new DaoFiles().obtenerIdFileImg(co4.getIdConsignacion());
+                            String img = new DaoFiles().obtenerRutaImagen(idFile);
+                            String img2 = new DaoFiles().obtenerRutaImagen(idFile2);
+                            String img3 = new DaoFiles().obtenerRutaImagen(idFile3);
+                            String img4 = new DaoFiles().obtenerRutaImagen(idFile4);
+
+                            FileInputStream in = new FileInputStream(img);
+                            PDImageXObject image = PDImageXObject.createFromFile(img, doc);
+                            PDImageXObject image2 = PDImageXObject.createFromFile(img2, doc);
+                            PDImageXObject image3 = PDImageXObject.createFromFile(img3, doc);
+                            PDImageXObject image4 = PDImageXObject.createFromFile(img4, doc);
+                            try (PDPageContentStream contents = new PDPageContentStream(doc, blanckPage, PDPageContentStream.AppendMode.OVERWRITE, true)) {
+                                positionX = 0;
+                                positionX = margen;
+                                positionY = 0;
+                                positionY = heightDoc - margen - imageHeight;
+                                contents.drawImage(image, positionX, positionY, imageWidth, imageHeight);
+                                String linea1 = "Fecha: " + co.getFecha_pago() + "    Valor: " + co.getValor() + "    Medio Pago: " + co.getNombre_plataforma();
+                                nuevaLineaFloat(linea1, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea2 = "Numero Recibo: " + co.getNum_recibo() + "   Sede: " + co.getNombre_sede() + "  Cedula: " + co.getNumero_documento();
+                                nuevaLineaFloat(linea2, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea3 = "Nombre de Cliente: " + co.getNombre_titular();
+                                nuevaLineaFloat(linea3, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea4 = "¿Quien Confirmo?: " + co.getNombreUsuario();
+                                nuevaLineaFloat(linea4, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea5 = "Observaciones: ";
+                                nuevaLineaFloat(linea5, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                positionX = 0;
+                                positionX = margen + imageWidth + margen + margen;
+                                contents.drawImage(image2, positionX, positionY, imageWidth, imageHeight);
+                                String linea6 = "Fecha: " + co2.getFecha_pago() + "    Valor: " + co2.getValor() + "    Medio Pago: " + co2.getNombre_plataforma();
+                                nuevaLineaFloat(linea6, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea7 = "Numero Recibo: " + co2.getNum_recibo() + "   Sede: " + co2.getNombre_sede() + "  Cedula: " + co2.getNumero_documento();
+                                nuevaLineaFloat(linea7, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea8 = "Nombre de Cliente: " + co2.getNombre_titular();
+                                nuevaLineaFloat(linea8, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea9 = "¿Quien Confirmo?: " + co2.getNombreUsuario();
+                                nuevaLineaFloat(linea9, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea10 = "Observaciones: ";
+                                nuevaLineaFloat(linea10, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                positionX = 0;
+                                positionY = 0;
+                                positionX = margen;
+                                positionY = heightDoc - margen - imageHeight - datos - margen - margen - imageHeight;
+                                contents.drawImage(image3, positionX, positionY, imageWidth, imageHeight);
+                                String linea11 = "Fecha: " + co3.getFecha_pago() + "    Valor: " + co3.getValor() + "    Medio Pago: " + co3.getNombre_plataforma();
+                                nuevaLineaFloat(linea11, positionX, positionY - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea12 = "Numero Recibo: " + co3.getNum_recibo() + "   Sede: " + co3.getNombre_sede() + "  Cedula: " + co3.getNumero_documento();
+                                nuevaLineaFloat(linea12, positionX, positionY - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea13 = "Nombre de Cliente: " + co3.getNombre_titular();
+                                nuevaLineaFloat(linea13, positionX, positionY - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea14 = "¿Quien Confirmo?: " + co3.getNombreUsuario();
+                                nuevaLineaFloat(linea14, positionX, positionY - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea15 = "Observaciones: ";
+                                nuevaLineaFloat(linea15, positionX, positionY - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                positionX = 0;
+                                positionX = margen + imageWidth + margen + margen;
+                                contents.drawImage(image4, positionX, positionY, imageWidth, imageHeight);
+                                String linea16 = "Fecha: " + co4.getFecha_pago() + "    Valor: " + co4.getValor() + "    Medio Pago: " + co4.getNombre_plataforma();
+                                nuevaLineaFloat(linea16, positionX, positionY - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea17 = "Numero Recibo: " + co4.getNum_recibo() + "   Sede: " + co4.getNombre_sede() + "  Cedula: " + co4.getNumero_documento();
+                                nuevaLineaFloat(linea17, positionX, positionY - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea18 = "Nombre de Cliente: " + co4.getNombre_titular();
+                                nuevaLineaFloat(linea18, positionX, positionY - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea19 = "¿Quien Confirmo?: " + co4.getNombreUsuario();
+                                nuevaLineaFloat(linea19, positionX, positionY - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea20 = "Observaciones: ";
+                                nuevaLineaFloat(linea20, positionX, positionY - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                contents.close();
+
+                            }
+                        } else {
+
+                            if (i == numeroPaginas) {
+                                int num = i * 4;
+                                int valor = cantidad - num;
+
+                                if (valor == 1) {
+                                    Consignacion co = con.get(count);
+                                    int idFile = new DaoFiles().obtenerIdFileImg(co.getIdConsignacion());
+                                    String img = new DaoFiles().obtenerRutaImagen(idFile);
+
+                                    FileInputStream in = new FileInputStream(img);
+                                    PDImageXObject image = PDImageXObject.createFromFile(img, doc);
+                                    try (PDPageContentStream contents = new PDPageContentStream(doc, blanckPage, PDPageContentStream.AppendMode.OVERWRITE, true)) {
+                                        positionX = 0;
+                                        positionX = margen;
+                                        positionY = 0;
+                                        positionY = heightDoc - margen - imageHeight;
+                                        contents.drawImage(image, positionX, positionY, imageWidth, imageHeight);
+                                        String linea1 = "Fecha: " + co.getFecha_pago() + "    Valor: " + co.getValor() + "    Medio Pago: " + co.getNombre_plataforma();
+                                        nuevaLineaFloat(linea1, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea2 = "Numero Recibo: " + co.getNum_recibo() + "   Sede: " + co.getNombre_sede() + "  Cedula: " + co.getNumero_documento();
+                                        nuevaLineaFloat(linea2, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea3 = "Nombre de Cliente: " + co.getNombre_titular();
+                                        nuevaLineaFloat(linea3, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea4 = "¿Quien Confirmo?: " + co.getNombreUsuario();
+                                        nuevaLineaFloat(linea4, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea5 = "Observaciones: ";
+                                        nuevaLineaFloat(linea5, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+
+                                        contents.close();
+
+                                    }
+                                } else {
+                                    if (valor == 2) {
+                                        Consignacion co = con.get(count);
+                                        Consignacion co2 = con.get(count + 1);
+                                        count += 2;
+                                        int idFile = new DaoFiles().obtenerIdFileImg(co.getIdConsignacion());
+                                        int idFile2 = new DaoFiles().obtenerIdFileImg(co2.getIdConsignacion());
+                                        String img = new DaoFiles().obtenerRutaImagen(idFile);
+                                        String img2 = new DaoFiles().obtenerRutaImagen(idFile2);
+
+                                        FileInputStream in = new FileInputStream(img);
+                                        PDImageXObject image = PDImageXObject.createFromFile(img, doc);
+                                        PDImageXObject image2 = PDImageXObject.createFromFile(img2, doc);
+                                        try (PDPageContentStream contents = new PDPageContentStream(doc, blanckPage, PDPageContentStream.AppendMode.OVERWRITE, true)) {
+                                            positionX = 0;
+                                            positionX = margen;
+                                            positionY = 0;
+                                            positionY = heightDoc - margen - imageHeight;
+                                            contents.drawImage(image, positionX, positionY, imageWidth, imageHeight);
+                                            String linea1 = "Fecha: " + co.getFecha_pago() + "    Valor: " + co.getValor() + "    Medio Pago: " + co.getNombre_plataforma();
+                                            nuevaLineaFloat(linea1, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            String linea2 = "Numero Recibo: " + co.getNum_recibo() + "   Sede: " + co.getNombre_sede() + "  Cedula: " + co.getNumero_documento();
+                                            nuevaLineaFloat(linea2, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            String linea3 = "Nombre de Cliente: " + co.getNombre_titular();
+                                            nuevaLineaFloat(linea3, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            String linea4 = "¿Quien Confirmo?: " + co.getNombreUsuario();
+                                            nuevaLineaFloat(linea4, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            String linea5 = "Observaciones: ";
+                                            nuevaLineaFloat(linea5, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            positionX = 0;
+                                            positionX = margen + imageWidth + margen + margen;
+                                            contents.drawImage(image2, positionX, positionY, imageWidth, imageHeight);
+                                            String linea6 = "Fecha: " + co2.getFecha_pago() + "    Valor: " + co2.getValor() + "    Medio Pago: " + co2.getNombre_plataforma();
+                                            nuevaLineaFloat(linea6, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            String linea7 = "Numero Recibo: " + co2.getNum_recibo() + "   Sede: " + co2.getNombre_sede() + "  Cedula: " + co2.getNumero_documento();
+                                            nuevaLineaFloat(linea7, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            String linea8 = "Nombre de Cliente: " + co2.getNombre_titular();
+                                            nuevaLineaFloat(linea8, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            String linea9 = "¿Quien Confirmo?: " + co2.getNombreUsuario();
+                                            nuevaLineaFloat(linea9, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            String linea10 = "Observaciones: ";
+                                            nuevaLineaFloat(linea10, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                            contents.close();
+
+                                        }
+                                    } else {
+                                        if (valor == 3) {
+                                            Consignacion co = con.get(count);
+                                            Consignacion co2 = con.get(count + 1);
+                                            Consignacion co3 = con.get(count + 2);
+                                            count += 3;
+                                            int idFile = new DaoFiles().obtenerIdFileImg(co.getIdConsignacion());
+                                            int idFile2 = new DaoFiles().obtenerIdFileImg(co2.getIdConsignacion());
+                                            int idFile3 = new DaoFiles().obtenerIdFileImg(co3.getIdConsignacion());
+                                            String img = new DaoFiles().obtenerRutaImagen(idFile);
+                                            String img2 = new DaoFiles().obtenerRutaImagen(idFile2);
+                                            String img3 = new DaoFiles().obtenerRutaImagen(idFile3);
+
+                                            FileInputStream in = new FileInputStream(img);
+                                            PDImageXObject image = PDImageXObject.createFromFile(img, doc);
+                                            PDImageXObject image2 = PDImageXObject.createFromFile(img2, doc);
+                                            PDImageXObject image3 = PDImageXObject.createFromFile(img3, doc);
+                                            try (PDPageContentStream contents = new PDPageContentStream(doc, blanckPage, PDPageContentStream.AppendMode.OVERWRITE, true)) {
+                                                positionX = 0;
+                                                positionX = margen;
+                                                positionY = 0;
+                                                positionY = heightDoc - margen - imageHeight;
+                                                contents.drawImage(image, positionX, positionY, imageWidth, imageHeight);
+                                                String linea1 = "Fecha: " + co.getFecha_pago() + "    Valor: " + co.getValor() + "    Medio Pago: " + co.getNombre_plataforma();
+                                                nuevaLineaFloat(linea1, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea2 = "Numero Recibo: " + co.getNum_recibo() + "   Sede: " + co.getNombre_sede() + "  Cedula: " + co.getNumero_documento();
+                                                nuevaLineaFloat(linea2, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea3 = "Nombre de Cliente: " + co.getNombre_titular();
+                                                nuevaLineaFloat(linea3, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea4 = "¿Quien Confirmo?: " + co.getNombreUsuario();
+                                                nuevaLineaFloat(linea4, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea5 = "Observaciones: ";
+                                                nuevaLineaFloat(linea5, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                positionX = 0;
+                                                positionX = margen + imageWidth + margen + margen;
+                                                contents.drawImage(image2, positionX, positionY, imageWidth, imageHeight);
+                                                String linea6 = "Fecha: " + co2.getFecha_pago() + "    Valor: " + co2.getValor() + "    Medio Pago: " + co2.getNombre_plataforma();
+                                                nuevaLineaFloat(linea6, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea7 = "Numero Recibo: " + co2.getNum_recibo() + "   Sede: " + co2.getNombre_sede() + "  Cedula: " + co2.getNumero_documento();
+                                                nuevaLineaFloat(linea7, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea8 = "Nombre de Cliente: " + co2.getNombre_titular();
+                                                nuevaLineaFloat(linea8, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea9 = "¿Quien Confirmo?: " + co2.getNombreUsuario();
+                                                nuevaLineaFloat(linea9, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea10 = "Observaciones: ";
+                                                nuevaLineaFloat(linea10, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                positionX = 0;
+                                                positionY = 0;
+                                                positionX = margen;
+                                                positionY = heightDoc - margen - imageHeight - datos - margen - margen - imageHeight;
+                                                contents.drawImage(image3, positionX, positionY, imageWidth, imageHeight);
+                                                String linea11 = "Fecha: " + co3.getFecha_pago() + "    Valor: " + co3.getValor() + "    Medio Pago: " + co3.getNombre_plataforma();
+                                                nuevaLineaFloat(linea11, positionX, positionY - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea12 = "Numero Recibo: " + co3.getNum_recibo() + "   Sede: " + co3.getNombre_sede() + "  Cedula: " + co3.getNumero_documento();
+                                                nuevaLineaFloat(linea12, positionX, positionY - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea13 = "Nombre de Cliente: " + co3.getNombre_titular();
+                                                nuevaLineaFloat(linea13, positionX, positionY - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea14 = "¿Quien Confirmo?: " + co3.getNombreUsuario();
+                                                nuevaLineaFloat(linea14, positionX, positionY - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                String linea15 = "Observaciones: ";
+                                                nuevaLineaFloat(linea15, positionX, positionY - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                contents.close();
+
+                                            }
+                                        } else {
+                                            if (valor == 4) {
+                                                Consignacion co = con.get(count);
+                                                Consignacion co2 = con.get(count + 1);
+                                                Consignacion co3 = con.get(count + 2);
+                                                Consignacion co4 = con.get(count + 3);
+                                                count += 4;
+                                                int idFile = new DaoFiles().obtenerIdFileImg(co.getIdConsignacion());
+                                                int idFile2 = new DaoFiles().obtenerIdFileImg(co2.getIdConsignacion());
+                                                int idFile3 = new DaoFiles().obtenerIdFileImg(co3.getIdConsignacion());
+                                                int idFile4 = new DaoFiles().obtenerIdFileImg(co4.getIdConsignacion());
+                                                String img = new DaoFiles().obtenerRutaImagen(idFile);
+                                                String img2 = new DaoFiles().obtenerRutaImagen(idFile2);
+                                                String img3 = new DaoFiles().obtenerRutaImagen(idFile3);
+                                                String img4 = new DaoFiles().obtenerRutaImagen(idFile4);
+
+                                                FileInputStream in = new FileInputStream(img);
+                                                PDImageXObject image = PDImageXObject.createFromFile(img, doc);
+                                                PDImageXObject image2 = PDImageXObject.createFromFile(img2, doc);
+                                                PDImageXObject image3 = PDImageXObject.createFromFile(img3, doc);
+                                                PDImageXObject image4 = PDImageXObject.createFromFile(img4, doc);
+                                                try (PDPageContentStream contents = new PDPageContentStream(doc, blanckPage, PDPageContentStream.AppendMode.OVERWRITE, true)) {
+                                                    positionX = 0;
+                                                    positionX = margen;
+                                                    positionY = 0;
+                                                    positionY = heightDoc - margen - imageHeight;
+                                                    contents.drawImage(image, positionX, positionY, imageWidth, imageHeight);
+                                                    String linea1 = "Fecha: " + co.getFecha_pago() + "    Valor: " + co.getValor() + "    Medio Pago: " + co.getNombre_plataforma();
+                                                    nuevaLineaFloat(linea1, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea2 = "Numero Recibo: " + co.getNum_recibo() + "   Sede: " + co.getNombre_sede() + "  Cedula: " + co.getNumero_documento();
+                                                    nuevaLineaFloat(linea2, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea3 = "Nombre de Cliente: " + co.getNombre_titular();
+                                                    nuevaLineaFloat(linea3, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea4 = "¿Quien Confirmo?: " + co.getNombreUsuario();
+                                                    nuevaLineaFloat(linea4, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea5 = "Observaciones: ";
+                                                    nuevaLineaFloat(linea5, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    positionX = 0;
+                                                    positionX = margen + imageWidth + margen + margen;
+                                                    contents.drawImage(image2, positionX, positionY, imageWidth, imageHeight);
+                                                    String linea6 = "Fecha: " + co2.getFecha_pago() + "    Valor: " + co2.getValor() + "    Medio Pago: " + co2.getNombre_plataforma();
+                                                    nuevaLineaFloat(linea6, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea7 = "Numero Recibo: " + co2.getNum_recibo() + "   Sede: " + co2.getNombre_sede() + "  Cedula: " + co2.getNumero_documento();
+                                                    nuevaLineaFloat(linea7, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea8 = "Nombre de Cliente: " + co2.getNombre_titular();
+                                                    nuevaLineaFloat(linea8, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea9 = "¿Quien Confirmo?: " + co2.getNombreUsuario();
+                                                    nuevaLineaFloat(linea9, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea10 = "Observaciones: ";
+                                                    nuevaLineaFloat(linea10, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    positionX = 0;
+                                                    positionY = 0;
+                                                    positionX = margen;
+                                                    positionY = heightDoc - margen - imageHeight - datos - margen - margen - imageHeight;
+                                                    contents.drawImage(image3, positionX, positionY, imageWidth, imageHeight);
+                                                    String linea11 = "Fecha: " + co3.getFecha_pago() + "    Valor: " + co3.getValor() + "    Medio Pago: " + co3.getNombre_plataforma();
+                                                    nuevaLineaFloat(linea11, positionX, positionY - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea12 = "Numero Recibo: " + co3.getNum_recibo() + "   Sede: " + co3.getNombre_sede() + "  Cedula: " + co3.getNumero_documento();
+                                                    nuevaLineaFloat(linea12, positionX, positionY - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea13 = "Nombre de Cliente: " + co3.getNombre_titular();
+                                                    nuevaLineaFloat(linea13, positionX, positionY - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea14 = "¿Quien Confirmo?: " + co3.getNombreUsuario();
+                                                    nuevaLineaFloat(linea14, positionX, positionY - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea15 = "Observaciones: ";
+                                                    nuevaLineaFloat(linea15, positionX, positionY - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    positionX = 0;
+                                                    positionX = margen + imageWidth + margen + margen;
+                                                    contents.drawImage(image4, positionX, positionY, imageWidth, imageHeight);
+                                                    String linea16 = "Fecha: " + co4.getFecha_pago() + "    Valor: " + co4.getValor() + "    Medio Pago: " + co4.getNombre_plataforma();
+                                                    nuevaLineaFloat(linea16, positionX, positionY - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea17 = "Numero Recibo: " + co4.getNum_recibo() + "   Sede: " + co4.getNombre_sede() + "  Cedula: " + co4.getNumero_documento();
+                                                    nuevaLineaFloat(linea17, positionX, positionY - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea18 = "Nombre de Cliente: " + co4.getNombre_titular();
+                                                    nuevaLineaFloat(linea18, positionX, positionY - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea19 = "¿Quien Confirmo?: " + co4.getNombreUsuario();
+                                                    nuevaLineaFloat(linea19, positionX, positionY - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    String linea20 = "Observaciones: ";
+                                                    nuevaLineaFloat(linea20, positionX, positionY - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                                    contents.close();
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+
+                            }
+
+                        }
+                    }
+                    doc.save(ruta);
+                    doc.close();
+
+                } else {
+
+                    PDPage blanckPage = new PDPage();
+                    doc.addPage(blanckPage);
+                    positionX = 0;
+                    positionY = 0;
+                    positionX = margen;
+                    positionY = heightDoc - margen - imageHeight;
+                    int list = 0;
+                    int can = con.size();
+                    if (can == 1) {
+                        Consignacion co = con.get(list);
+                        int idFile = new DaoFiles().obtenerIdFileImg(co.getIdConsignacion());
+                        String img = new DaoFiles().obtenerRutaImagen(idFile);
+
+                        FileInputStream in = new FileInputStream(img);
+                        PDImageXObject image = PDImageXObject.createFromFile(img, doc);
+                        try (PDPageContentStream contents = new PDPageContentStream(doc, blanckPage, PDPageContentStream.AppendMode.OVERWRITE, true)) {
+
+                            contents.drawImage(image, positionX, positionY, imageWidth, imageHeight);
+                            String linea1 = "Fecha: " + co.getFecha_pago() + "    Valor: " + co.getValor() + "    Medio Pago: " + co.getNombre_plataforma();
+                            nuevaLineaFloat(linea1, margen, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                            String linea2 = "Numero Recibo: " + co.getNum_recibo() + "   Sede: " + co.getNombre_sede() + "  Cedula: " + co.getNumero_documento();
+                            nuevaLineaFloat(linea2, margen, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                            String linea3 = "Nombre de Cliente: " + co.getNombre_titular();
+                            nuevaLineaFloat(linea3, margen, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                            String linea4 = "¿Quien Confirmo?: " + co.getNombreUsuario();
+                            nuevaLineaFloat(linea4, margen, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                            String linea5 = "Observaciones: ";
+                            nuevaLineaFloat(linea5, margen, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                            contents.close();
+
+                        }
+                    } else {
+                        if (can == 2) {
+                            Consignacion co = con.get(list);
+                            Consignacion c = con.get(list + 1);
+                            int idFile = new DaoFiles().obtenerIdFileImg(co.getIdConsignacion());
+                            int idFile2 = new DaoFiles().obtenerIdFileImg(c.getIdConsignacion());
+                            String img = new DaoFiles().obtenerRutaImagen(idFile);
+                            String img2 = new DaoFiles().obtenerRutaImagen(idFile2);
+
+                            FileInputStream in = new FileInputStream(img);
+                            PDImageXObject image = PDImageXObject.createFromFile(img, doc);
+                            PDImageXObject image2 = PDImageXObject.createFromFile(img2, doc);
+                            try (PDPageContentStream contents = new PDPageContentStream(doc, blanckPage, PDPageContentStream.AppendMode.OVERWRITE, true)) {
+
+                                contents.drawImage(image, positionX, positionY, imageWidth, imageHeight);
+                                String linea1 = "Fecha: " + co.getFecha_pago() + "    Valor: " + co.getValor() + "    Medio Pago: " + co.getNombre_plataforma();
+                                nuevaLineaFloat(linea1, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea2 = "Numero Recibo: " + co.getNum_recibo() + "   Sede: " + co.getNombre_sede() + "  Cedula: " + co.getNumero_documento();
+                                nuevaLineaFloat(linea2, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea3 = "Nombre de Cliente: " + co.getNombre_titular();
+                                nuevaLineaFloat(linea3, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea4 = "¿Quien Confirmo?: " + co.getNombreUsuario();
+                                nuevaLineaFloat(linea4, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea5 = "Observaciones: ";
+                                nuevaLineaFloat(linea5, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                positionX = 0;
+                                positionX = margen + imageWidth + margen + margen;
+                                contents.drawImage(image2, positionX, positionY, imageWidth, imageHeight);
+                                String linea6 = "Fecha: " + c.getFecha_pago() + "    Valor: " + c.getValor() + "    Medio Pago: " + c.getNombre_plataforma();
+                                nuevaLineaFloat(linea6, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea7 = "Numero Recibo: " + c.getNum_recibo() + "   Sede: " + c.getNombre_sede() + "  Cedula: " + c.getNumero_documento();
+                                nuevaLineaFloat(linea7, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea8 = "Nombre de Cliente: " + c.getNombre_titular();
+                                nuevaLineaFloat(linea8, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea9 = "¿Quien Confirmo?: " + c.getNombreUsuario();
+                                nuevaLineaFloat(linea9, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                String linea10 = "Observaciones: ";
+                                nuevaLineaFloat(linea10, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                contents.close();
+
+                            }
+                        } else {
+                            if (can == 3) {
+                                Consignacion co = con.get(list);
+                                Consignacion co2 = con.get(list + 1);
+                                Consignacion co3 = con.get(list + 2);
+                                int idFile = new DaoFiles().obtenerIdFileImg(co.getIdConsignacion());
+                                int idFile2 = new DaoFiles().obtenerIdFileImg(co2.getIdConsignacion());
+                                int idFile3 = new DaoFiles().obtenerIdFileImg(co3.getIdConsignacion());
+                                String img = new DaoFiles().obtenerRutaImagen(idFile);
+                                String img2 = new DaoFiles().obtenerRutaImagen(idFile2);
+                                String img3 = new DaoFiles().obtenerRutaImagen(idFile3);
+
+                                FileInputStream in = new FileInputStream(img);
+                                PDImageXObject image = PDImageXObject.createFromFile(img, doc);
+                                PDImageXObject image2 = PDImageXObject.createFromFile(img2, doc);
+                                PDImageXObject image3 = PDImageXObject.createFromFile(img3, doc);
+                                try (PDPageContentStream contents = new PDPageContentStream(doc, blanckPage, PDPageContentStream.AppendMode.OVERWRITE, true)) {
+
+                                    contents.drawImage(image, positionX, positionY, imageWidth, imageHeight);
+                                    String linea1 = "Fecha: " + co.getFecha_pago() + "    Valor: " + co.getValor() + "    Medio Pago: " + co.getNombre_plataforma();
+                                    nuevaLineaFloat(linea1, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea2 = "Numero Recibo: " + co.getNum_recibo() + "   Sede: " + co.getNombre_sede() + "  Cedula: " + co.getNumero_documento();
+                                    nuevaLineaFloat(linea2, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea3 = "Nombre de Cliente: " + co.getNombre_titular();
+                                    nuevaLineaFloat(linea3, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea4 = "¿Quien Confirmo?: " + co.getNombreUsuario();
+                                    nuevaLineaFloat(linea4, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea5 = "Observaciones: ";
+                                    nuevaLineaFloat(linea5, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    positionX = 0;
+                                    positionX = margen + imageWidth + margen + margen;
+                                    contents.drawImage(image2, positionX, positionY, imageWidth, imageHeight);
+                                    String linea6 = "Fecha: " + co2.getFecha_pago() + "    Valor: " + co2.getValor() + "    Medio Pago: " + co2.getNombre_plataforma();
+                                    nuevaLineaFloat(linea6, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea7 = "Numero Recibo: " + co2.getNum_recibo() + "   Sede: " + co2.getNombre_sede() + "  Cedula: " + co2.getNumero_documento();
+                                    nuevaLineaFloat(linea7, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea8 = "Nombre de Cliente: " + co2.getNombre_titular();
+                                    nuevaLineaFloat(linea8, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea9 = "¿Quien Confirmo?: " + co2.getNombreUsuario();
+                                    nuevaLineaFloat(linea9, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea10 = "Observaciones: ";
+                                    nuevaLineaFloat(linea10, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    positionX = 0;
+                                    positionY = 0;
+                                    positionX = margen;
+                                    positionY = heightDoc - margen - imageHeight - datos - margen - margen - imageHeight;
+                                    contents.drawImage(image3, positionX, positionY, imageWidth, imageHeight);
+                                    String linea11 = "Fecha: " + co3.getFecha_pago() + "    Valor: " + co3.getValor() + "    Medio Pago: " + co3.getNombre_plataforma();
+                                    nuevaLineaFloat(linea11, positionX, positionY - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea12 = "Numero Recibo: " + co3.getNum_recibo() + "   Sede: " + co3.getNombre_sede() + "  Cedula: " + co3.getNumero_documento();
+                                    nuevaLineaFloat(linea12, positionX, positionY - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea13 = "Nombre de Cliente: " + co3.getNombre_titular();
+                                    nuevaLineaFloat(linea13, positionX, positionY - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea14 = "¿Quien Confirmo?: " + co3.getNombreUsuario();
+                                    nuevaLineaFloat(linea14, positionX, positionY - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    String linea15 = "Observaciones: ";
+                                    nuevaLineaFloat(linea15, positionX, positionY - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                    contents.close();
+
+                                }
+                            } else {
+                                if (can == 4) {
+                                    Consignacion co = con.get(list);
+                                    Consignacion co2 = con.get(list + 1);
+                                    Consignacion co3 = con.get(list + 2);
+                                    Consignacion co4 = con.get(list + 3);
+                                    int idFile = new DaoFiles().obtenerIdFileImg(co.getIdConsignacion());
+                                    int idFile2 = new DaoFiles().obtenerIdFileImg(co2.getIdConsignacion());
+                                    int idFile3 = new DaoFiles().obtenerIdFileImg(co3.getIdConsignacion());
+                                    int idFile4 = new DaoFiles().obtenerIdFileImg(co4.getIdConsignacion());
+                                    String img = new DaoFiles().obtenerRutaImagen(idFile);
+                                    String img2 = new DaoFiles().obtenerRutaImagen(idFile2);
+                                    String img3 = new DaoFiles().obtenerRutaImagen(idFile3);
+                                    String img4 = new DaoFiles().obtenerRutaImagen(idFile4);
+
+                                    FileInputStream in = new FileInputStream(img);
+                                    PDImageXObject image = PDImageXObject.createFromFile(img, doc);
+                                    PDImageXObject image2 = PDImageXObject.createFromFile(img2, doc);
+                                    PDImageXObject image3 = PDImageXObject.createFromFile(img3, doc);
+                                    PDImageXObject image4 = PDImageXObject.createFromFile(img4, doc);
+                                    try (PDPageContentStream contents = new PDPageContentStream(doc, blanckPage, PDPageContentStream.AppendMode.OVERWRITE, true)) {
+
+                                        contents.drawImage(image, positionX, positionY, imageWidth, imageHeight);
+                                        String linea1 = "Fecha: " + co.getFecha_pago() + "    Valor: " + co.getValor() + "    Medio Pago: " + co.getNombre_plataforma();
+                                        nuevaLineaFloat(linea1, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea2 = "Numero Recibo: " + co.getNum_recibo() + "   Sede: " + co.getNombre_sede() + "  Cedula: " + co.getNumero_documento();
+                                        nuevaLineaFloat(linea2, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea3 = "Nombre de Cliente: " + co.getNombre_titular();
+                                        nuevaLineaFloat(linea3, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea4 = "¿Quien Confirmo?: " + co.getNombreUsuario();
+                                        nuevaLineaFloat(linea4, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea5 = "Observaciones: ";
+                                        nuevaLineaFloat(linea5, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        positionX = 0;
+                                        positionX = margen + imageWidth + margen + margen;
+                                        contents.drawImage(image2, positionX, positionY, imageWidth, imageHeight);
+                                        String linea6 = "Fecha: " + co2.getFecha_pago() + "    Valor: " + co2.getValor() + "    Medio Pago: " + co2.getNombre_plataforma();
+                                        nuevaLineaFloat(linea6, positionX, heightDoc - margen - imageHeight - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea7 = "Numero Recibo: " + co2.getNum_recibo() + "   Sede: " + co2.getNombre_sede() + "  Cedula: " + co2.getNumero_documento();
+                                        nuevaLineaFloat(linea7, positionX, heightDoc - margen - imageHeight - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea8 = "Nombre de Cliente: " + co2.getNombre_titular();
+                                        nuevaLineaFloat(linea8, positionX, heightDoc - margen - imageHeight - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea9 = "¿Quien Confirmo?: " + co2.getNombreUsuario();
+                                        nuevaLineaFloat(linea9, positionX, heightDoc - margen - imageHeight - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea10 = "Observaciones: ";
+                                        nuevaLineaFloat(linea10, positionX, heightDoc - margen - imageHeight - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        positionX = 0;
+                                        positionY = 0;
+                                        positionX = margen;
+                                        positionY = heightDoc - margen - imageHeight - datos - margen - margen - imageHeight;
+                                        contents.drawImage(image3, positionX, positionY, imageWidth, imageHeight);
+                                        String linea11 = "Fecha: " + co3.getFecha_pago() + "    Valor: " + co3.getValor() + "    Medio Pago: " + co3.getNombre_plataforma();
+                                        nuevaLineaFloat(linea11, positionX, positionY - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea12 = "Numero Recibo: " + co3.getNum_recibo() + "   Sede: " + co3.getNombre_sede() + "  Cedula: " + co3.getNumero_documento();
+                                        nuevaLineaFloat(linea12, positionX, positionY - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea13 = "Nombre de Cliente: " + co3.getNombre_titular();
+                                        nuevaLineaFloat(linea13, positionX, positionY - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea14 = "¿Quien Confirmo?: " + co3.getNombreUsuario();
+                                        nuevaLineaFloat(linea14, positionX, positionY - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea15 = "Observaciones: ";
+                                        nuevaLineaFloat(linea15, positionX, positionY - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        positionX = 0;
+                                        positionX = margen + imageWidth + margen + margen;
+                                        contents.drawImage(image4, positionX, positionY, imageWidth, imageHeight);
+                                        String linea16 = "Fecha: " + co4.getFecha_pago() + "    Valor: " + co4.getValor() + "    Medio Pago: " + co4.getNombre_plataforma();
+                                        nuevaLineaFloat(linea16, positionX, positionY - 10, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea17 = "Numero Recibo: " + co4.getNum_recibo() + "   Sede: " + co4.getNombre_sede() + "  Cedula: " + co4.getNumero_documento();
+                                        nuevaLineaFloat(linea17, positionX, positionY - 30, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea18 = "Nombre de Cliente: " + co4.getNombre_titular();
+                                        nuevaLineaFloat(linea18, positionX, positionY - 50, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea19 = "¿Quien Confirmo?: " + co4.getNombreUsuario();
+                                        nuevaLineaFloat(linea19, positionX, positionY - 70, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        String linea20 = "Observaciones: ";
+                                        nuevaLineaFloat(linea20, positionX, positionY - 90, contents, PDType1Font.HELVETICA_BOLD, 9);
+                                        contents.close();
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    doc.save(ruta);
+                    doc.close();
+
+                }
+
+            }
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        return ruta;
+    }
+
     public static void nuevaLinea(String linea, int x, int y, PDPageContentStream contens, PDFont fuente, int tamañoFont) throws IOException {
+        contens.beginText();
+        PDFont font = fuente;
+        contens.setFont(font, tamañoFont);
+        contens.newLineAtOffset(x, y);
+
+        contens.showText(linea);
+        contens.endText();
+    }
+
+    public static void nuevaLineaFloat(String linea, float x, float y, PDPageContentStream contens, PDFont fuente, int tamañoFont) throws IOException {
         contens.beginText();
         PDFont font = fuente;
         contens.setFont(font, tamañoFont);
@@ -243,7 +901,7 @@ public class FuncionesGenerales {
                 pal = "N°";
                 break;
             case 2:
-                pal = "Titular";
+                pal = "Cedula";
                 break;
             case 3:
                 pal = "N° Recibo";
@@ -252,13 +910,7 @@ public class FuncionesGenerales {
                 pal = "F. Pago";
                 break;
             case 5:
-                pal = "F. Creacion";
-                break;
-            case 6:
                 pal = "Valor";
-                break;
-            case 7:
-                pal = "Estado";
                 break;
             default:
                 pal = "Banco";
@@ -273,7 +925,7 @@ public class FuncionesGenerales {
 
         switch (num) {
             case 2:
-                pal = con.getNombre_titular();
+                pal = con.getNumero_documento();
                 break;
             case 3:
                 pal = con.getNum_recibo();
@@ -282,16 +934,10 @@ public class FuncionesGenerales {
                 f = fechaString(con.getFecha_pago());
                 pal = f;
                 break;
+
             case 5:
-                f = fechaString(con.getFecha_creacion());
-                pal = f;
-                break;
-            case 6:
                 int va  = (int) con.getValor();
                 pal = Integer.toString(va);
-                break;
-            case 7:
-                pal = con.getNombre_estado();
                 break;
 
             default:
@@ -359,11 +1005,41 @@ public class FuncionesGenerales {
         return fullDate;
     }
 
-    public Date voltearFecha (Date fecha){
+    public Date voltearFecha(Date fecha) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String formattedDate = simpleDateFormat.format(fecha);
         Date f = fechaSQL(formattedDate, "dd-MM-yyyy");
         return f;
+    }
+
+    public static void enviarCorreo(String asunto, String mensaje, String emailDestino) throws AddressException, MessagingException {
+        Properties propiedad = new Properties();
+        propiedad.setProperty("mail.smtp.host", "smtp.gmail.com");
+        propiedad.setProperty("mail.smtp.starttls.enable", "true");
+        propiedad.setProperty("mail.smtp.port", "587");
+        propiedad.setProperty("mail.smtp.auth", "true");
+        propiedad.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
+
+        Session session = Session.getDefaultInstance(propiedad);
+        String emailOrigen = "dudicodiaz@gmail.com";
+        String password = "moqdfhvobkdzgjfn";
+
+        MimeMessage mail = new MimeMessage(session);
+
+        mail.setFrom(new InternetAddress(emailOrigen));
+        mail.addRecipient(Message.RecipientType.TO, new InternetAddress(emailDestino));
+        mail.setSubject(asunto);
+        mail.setText(mensaje);
+
+        try {
+            Transport transporte = session.getTransport("smtp");
+            transporte.connect(emailOrigen, password);
+            transporte.sendMessage(mail, mail.getRecipients(Message.RecipientType.TO));
+            System.out.println("----" + transporte);
+        } catch (MessagingException ex) {
+            System.out.println(ex);
+        }
+
     }
 
 }

@@ -1,9 +1,12 @@
 package Web;
 
+import Datos.DaoActualizacion;
 import Datos.DaoConsignaciones;
 import Datos.DaoConsignaciones2;
+import Datos.DaoEstados;
 import Datos.DaoSedes;
 import Datos.DaoUsuarios;
+import Dominio.Actualizacion;
 import Dominio.Consignacion;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -101,7 +104,16 @@ public class ServletControladorConsignaciones2 extends HttpServlet {
                         Logger.getLogger(ServletControladorConsignaciones.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-
+                break;
+                case "cancelarConsignacion": {
+                    try {
+                        this.cancelarConsignacion(req, resp);
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(ServletControladorConsignaciones.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ServletControladorConsignaciones2.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
     }
@@ -117,6 +129,8 @@ public class ServletControladorConsignaciones2 extends HttpServlet {
                         this.actualizarConsignaciones(req, resp);
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(ServletControladorConsignaciones.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ServletControladorConsignaciones2.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
 
@@ -242,7 +256,7 @@ public class ServletControladorConsignaciones2 extends HttpServlet {
         out.flush();
     }
 
-    private void actualizarConsignaciones(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, IOException {
+    private void actualizarConsignaciones(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, IOException, SQLException {
         int idConsignacion = Integer.parseInt(req.getParameter("idConsignacion"));
         String num_recibo = req.getParameter("num_recibo");
         float valor = Float.valueOf(req.getParameter("valor"));
@@ -250,7 +264,19 @@ public class ServletControladorConsignaciones2 extends HttpServlet {
         Date fecha_pago = Funciones.FuncionesGenerales.fechaSQL(fecha, "yyyy-MM-dd");
         int id_obligacion = Integer.parseInt(req.getParameter("id_obligacion"));
         int id_banco = Integer.parseInt(req.getParameter("banco"));
-        
+        String estado = req.getParameter("estado");
+
+        if (estado != null) {
+            int id_estado = new DaoEstados().obtenerIdEstado(estado);
+            HttpSession session = req.getSession(true);
+            String emal = (String) session.getAttribute("usuario");
+            int id_usuario = new DaoUsuarios().obtenerIdUsuario(emal);
+            Actualizacion actu = new Actualizacion(id_estado, id_usuario);
+            int id_actualizacion = new DaoActualizacion().guardarActualizacion(actu);
+            int actualizar_consi = new DaoConsignaciones().actualizarEstadoConsig(id_actualizacion, idConsignacion);
+
+        }
+
         Consignacion con = new Consignacion();
         con.setIdConsignacion(idConsignacion);
         con.setNum_recibo(num_recibo);
@@ -258,14 +284,36 @@ public class ServletControladorConsignaciones2 extends HttpServlet {
         con.setFecha_pago(fecha_pago);
         con.setId_obligacion(id_obligacion);
         con.setId_plataforma(id_banco);
-        
+
         int actualizar_consignacion = new DaoConsignaciones2().actualizarConsignacion(con);
-        
+
         resp.setContentType("text/plain");
 
         PrintWriter out = resp.getWriter();
 
         out.print(actualizar_consignacion);
+        out.flush();
+    }
+
+    private void cancelarConsignacion(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
+        int idConsignacion = Integer.parseInt(req.getParameter("idConsignacion"));
+        HttpSession session = req.getSession(true);
+        String email = (String)session.getAttribute("usuario");
+        int id_usuario = new DaoUsuarios().obtenerIdUsuario(email);
+        
+        int id_estado = new DaoEstados().obtenerIdEstado("Cancelado");
+        
+        Actualizacion actu = new Actualizacion(id_estado, id_usuario);
+        
+        int id_actualizacion = new DaoActualizacion().guardarActualizacion(actu);
+        
+        int actualizar_consig = new DaoConsignaciones().actualizarEstadoConsig(id_actualizacion, idConsignacion);
+        
+        resp.setContentType("text/plain");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(actualizar_consig);
         out.flush();
     }
 

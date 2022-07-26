@@ -1,9 +1,13 @@
 package Web;
 
 import Datos.DaoCartera;
+import Datos.DaoConsignaciones2;
 import Datos.DaoFiles;
 import Datos.DaoObligaciones;
+import Datos.DaoRoles;
+import Datos.DaoUsuarios;
 import Dominio.Archivo;
+import Dominio.Consignacion;
 import Dominio.Obligaciones;
 import com.google.gson.Gson;
 import java.io.BufferedReader;
@@ -37,8 +41,8 @@ import javax.servlet.http.Part;
 @MultipartConfig
 @WebServlet(urlPatterns = {"/ServletControladorFiles"})
 public class ServletControladorFiles extends HttpServlet {
-    //J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\txt\\
-    private final String rutaFiles = "/opt/glassfish/glassfish/domains/domain1/applications/ROOT/archivos/txt/";
+
+    private final String rutaFiles = "J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\txt\\";
     private final File uploads = new File(rutaFiles);
     private final String[] extens = {".txt"};
 
@@ -47,16 +51,87 @@ public class ServletControladorFiles extends HttpServlet {
         String accion = req.getParameter("accion");
         if (accion != null) {
             switch (accion) {
-                case "listarFiles":
-                {
+                case "listarFiles": {
                     try {
                         this.listarFiles(req, resp);
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                    break;
+                break;
+                case "obtenerRutaImagen": {
+                    try {
+                        this.obtenerRutaImagen(req, resp);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+                case "generarReporte": {
+                    try {
+                        this.generarReporte(req, resp);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+                case "traerReportesByIdUsuario": {
+                    try {
+                        this.traerReportesByIdUsuario(req, resp);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+                case "traerReportesByFecha": {
+                    try {
+                        this.traerReportesByFecha(req, resp);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+                case "traerReportesAdminByFecha": {
+                    try {
+                        this.traerReportesAdminByFecha(req, resp);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+                case "traerReportesAdmin": {
+                    try {
+                        this.traerReportesAdmin(req, resp);
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+                case "descargarReporte": {
+                    try {
+                        this.descargarReporte(req, resp);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
+                case "descargarReporteAdmin": {
+                    try {
+                        this.descargarReporteAdmin(req, resp);
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
 
+                case "traerReportesAdminByUsuario": {
+                    try {
+                        this.traerReportesAdminByUsuario(req, resp);
+                    } catch (ClassNotFoundException ex) {
+                        Logger.getLogger(ServletControladorFiles.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
                 default:
                     this.accionDefaul(req, resp);
             }
@@ -100,7 +175,6 @@ public class ServletControladorFiles extends HttpServlet {
             Archivo file = new Archivo(name, photo, fecha, id_usuario);
             int save = new DaoFiles().guardarArchivoTxt(file);
 
-           
             //leemos el archivo y guardamos en base datos
             int leerArchivo = leerTxt(name);
 
@@ -149,8 +223,7 @@ public class ServletControladorFiles extends HttpServlet {
         int obtenerIdTxt = new DaoFiles().obtenerIdFileTxt(nombre);
         String linea = "";
         String delimitante = "\\|";
-        //J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\txt\\" + nombre
-        String ruta = "/opt/glassfish/glassfish/domains/domain1/applications/ROOT/archivos/txt/" + nombre;
+        String ruta = "J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\txt\\" + nombre;
 
         Obligaciones obligacion = null;
         int guardarObliga = 0;
@@ -233,11 +306,8 @@ public class ServletControladorFiles extends HttpServlet {
 
     private void listarFiles(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, IOException {
         List<Archivo> listaFiles = new DaoFiles().listarFiles();
-        
-        
-        Gson gson = new Gson();
 
-        
+        Gson gson = new Gson();
 
         String json = gson.toJson(listaFiles);
         resp.setContentType("application/json");
@@ -258,7 +328,225 @@ public class ServletControladorFiles extends HttpServlet {
             resp.sendRedirect("login.html");
         }
     }
-    
-     
+
+    private void obtenerRutaImagen(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, ClassNotFoundException, SQLException, IOException {
+        int idConsignacion = Integer.parseInt(req.getParameter("idConsignacion"));
+
+        int idFileImagen = new DaoFiles().obtenerIdFileImg(idConsignacion);
+
+        String nombreArchivo = new DaoFiles().obtenerNombreFile(idFileImagen);
+        String ruta = "archivos/img/" + nombreArchivo;
+
+        resp.setContentType("text/plain");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(ruta);
+        out.flush();
+
+    }
+
+    private void generarReporte(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, IOException, SQLException {
+        HttpSession session = req.getSession(true);
+        String email = (String) session.getAttribute("usuario");
+        int id_usuario = new DaoUsuarios().obtenerIdUsuario(email);
+        List<Consignacion> consigTempCartera = new DaoConsignaciones2().listarConsignacionesTempoCartera(id_usuario);
+        if (consigTempCartera.size() > 0) {
+
+            String generarPdf = Funciones.FuncionesGenerales.generarPdf(consigTempCartera, email);
+            if (generarPdf != null || !"".equals(generarPdf)) {
+                String nombreArchivo = Funciones.FuncionesGenerales.nombreArchivo(generarPdf);
+                System.out.println(nombreArchivo);
+
+                Archivo file = new Archivo(nombreArchivo, generarPdf);
+                file.setId_usuario(id_usuario);
+
+                int guardarArchivo = new DaoFiles().guardarArchivoReportes(file);
+
+                int elimnarTemporalCartera = new DaoConsignaciones2().eliminarTemporalCartera(id_usuario);
+                resp.setContentType("text/plain");
+
+                PrintWriter out = resp.getWriter();
+
+                out.print(elimnarTemporalCartera);
+                out.flush();
+            } else {
+                String error = "Error";
+                resp.setContentType("text/plain");
+
+                PrintWriter out = resp.getWriter();
+
+                out.print(error);
+                out.flush();
+            }
+
+        } else {
+            String error = "null";
+            resp.setContentType("text/plain");
+
+            PrintWriter out = resp.getWriter();
+
+            out.print(error);
+            out.flush();
+        }
+
+    }
+
+    private void traerReportesByIdUsuario(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
+        HttpSession session = req.getSession(true);
+        String email = (String) session.getAttribute("usuario");
+        int id_usuario = new DaoUsuarios().obtenerIdUsuario(email);
+        List<Archivo> reportes = new DaoFiles().listarFilesByIdUsuario(id_usuario);
+
+        Gson gson = new Gson();
+
+        String json = gson.toJson(reportes);
+        resp.setContentType("application/json");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(json);
+        out.flush();
+    }
+
+    private void traerReportesByFecha(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
+        String fecha = req.getParameter("fecha");
+
+        String fecha1 = fecha + " 00:00:00";
+        String fecha2 = fecha + " 23:59:59";
+
+        HttpSession session = req.getSession(true);
+        String mail = (String) session.getAttribute("usuario");
+        int id_usuario = new DaoUsuarios().obtenerIdUsuario(mail);
+        List<Archivo> reportes = new DaoFiles().listarFilesByFecha(id_usuario, fecha1, fecha2);
+
+        Gson gson = new Gson();
+
+        String json = gson.toJson(reportes);
+        resp.setContentType("application/json");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(json);
+        out.flush();
+    }
+
+    private void descargarReporte(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
+        int idFile = Integer.parseInt(req.getParameter("idFile"));
+        HttpSession session = req.getSession(true);
+        String email = (String) session.getAttribute("usuario");
+        String rol = new DaoRoles().obtenerRolUsuario(email);
+        String ruta = null;
+        String nombreReporte = new DaoFiles().obtenerNombreReporte(idFile);
+        switch (rol) {
+            case "Administrador":
+                ruta = "archivos\\reportes\\Admin\\" + nombreReporte;
+                break;
+            case "Cartera":
+                ruta = "archivos\\reportes\\Cartera\\" + nombreReporte;
+                break;
+            case "Contabilidad":
+                ruta = "archivos\\reportes\\Contabilidad\\" + nombreReporte;
+                break;
+            case "Caja":
+                ruta = "archivos\\reportes\\Caja\\" + nombreReporte;
+                break;
+        }
+
+        resp.setContentType("text/plain");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(ruta);
+        out.flush();
+    }
+
+    private void traerReportesAdmin(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, IOException {
+        List<Archivo> reportes = new DaoFiles().listarReportesAdmin();
+        Gson gson = new Gson();
+
+        String json = gson.toJson(reportes);
+        resp.setContentType("application/json");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(json);
+        out.flush();
+    }
+
+    private void descargarReporteAdmin(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, IOException {
+        int idFile = Integer.parseInt(req.getParameter("idFile"));
+        String ruta = null;
+        Archivo reporte = new DaoFiles().obtenerNombreUsuarioArchivo(idFile);
+
+        String rol = new DaoRoles().obtenerRolUsuario(reporte.getEmail());
+        switch (rol) {
+            case "Administrador":
+                ruta = "archivos\\reportes\\Admin\\" + reporte.getNombre_archivo();
+                break;
+            case "Cartera":
+                ruta = "archivos\\reportes\\Cartera\\" + reporte.getNombre_archivo();
+                break;
+            case "Contabilidad":
+                ruta = "archivos\\reportes\\Contabilidad\\" + reporte.getNombre_archivo();
+                break;
+            case "Caja":
+                ruta = "archivos\\reportes\\Caja\\" + reporte.getNombre_archivo();
+                break;
+        }
+
+        resp.setContentType("text/plain");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(ruta);
+        out.flush();
+
+    }
+
+    private void traerReportesAdminByFecha(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
+        String fecha = req.getParameter("fecha");
+
+        String fecha1 = fecha + " 00:00:00";
+        String fecha2 = fecha + " 23:59:59";
+
+        HttpSession session = req.getSession(true);
+        String mail = (String) session.getAttribute("usuario");
+        int id_usuario = new DaoUsuarios().obtenerIdUsuario(mail);
+        List<Archivo> reportes = new DaoFiles().listarFilesAdminByFecha(id_usuario, fecha1, fecha2);
+
+        Gson gson = new Gson();
+
+        String json = gson.toJson(reportes);
+        resp.setContentType("application/json");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(json);
+        out.flush();
+    }
+
+    private void traerReportesAdminByUsuario(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, IOException {
+        int idUsuario = Integer.parseInt(req.getParameter("idUsuario"));
+        String fecha = req.getParameter("fecha");
+        List<Archivo> reportes = null;
+        if (fecha == null) {
+            reportes = new DaoFiles().listarFilesByIdUsuario(idUsuario);
+        } else {
+            String fecha1 = fecha + " 00:00:00";
+            String fecha2 = fecha + " 23:59:59";
+             reportes = new DaoFiles().listarFilesByFecha(idUsuario, fecha1, fecha2);
+        }
+         Gson gson = new Gson();
+
+        String json = gson.toJson(reportes);
+        resp.setContentType("application/json");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(json);
+        out.flush();
+        
+    }
 
 }

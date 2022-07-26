@@ -1,4 +1,3 @@
-
 package Web;
 
 import Datos.DaoConsignaciones;
@@ -19,58 +18,58 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
 @WebServlet(urlPatterns = {"/ServletObservaciones"})
-public class ServletObservaciones extends HttpServlet{
-    
-    
-    
+public class ServletObservaciones extends HttpServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         String accion = req.getParameter("accion");
 
         if (accion != null) {
             switch (accion) {
-                case "obtenerObservaciones":
-                {
+                case "obtenerObservaciones": {
                     try {
                         this.obtenerObservaciones(req, resp);
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(ServletObservaciones.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                    break;
+                break;
 
-                    
             }
         }
     }
-    
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         String accion = req.getParameter("accion");
 
         if (accion != null) {
             switch (accion) {
-                case "nuevaObservacion":
-                {
+                case "nuevaObservacion": {
                     try {
                         this.nuevaObservacion(req, resp);
                     } catch (ClassNotFoundException | SQLException ex) {
                         Logger.getLogger(ServletObservaciones.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                    break;
-                case "guardarObservacion":
-                {
+                break;
+                case "guardarObservacion": {
                     try {
                         this.guardarObservacion(req, resp);
                     } catch (ClassNotFoundException | SQLException ex) {
                         Logger.getLogger(ServletObservaciones.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                    break;
-
+                break;
+                case "ObservacionTemporal": {
+                    try {
+                        this.ObservacionTemporal(req, resp);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(ServletObservaciones.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
 
             }
         }
@@ -79,7 +78,7 @@ public class ServletObservaciones extends HttpServlet{
     private void obtenerObservaciones(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, IOException {
         int id_consignacion = Integer.parseInt(req.getParameter("idConsignacion"));
         List<Observaciones> observaciones = new DaoObservacion().obtenerObservaciones(id_consignacion);
-        
+
         Gson gson = new Gson();
 
         String json = gson.toJson(observaciones);
@@ -93,36 +92,36 @@ public class ServletObservaciones extends HttpServlet{
 
     private void nuevaObservacion(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
         HttpSession sesion = req.getSession(true);
-        String email = (String)sesion.getAttribute("usuario");
+        String email = (String) sesion.getAttribute("usuario");
         String observacion = req.getParameter("observacion");
         int id_consignacion = Integer.parseInt(req.getParameter("idConsignacion"));
         int id_usuario = new DaoUsuarios().obtenerIdUsuario(email);
         Observaciones obs = new Observaciones(observacion, id_usuario, id_consignacion);
-        
+
         int guardarObservacion = new DaoObservacion().guardarObservacion(obs);
-        
+
         int actualizarObservacionConsignacion = new DaoConsignaciones().actualizarObservacionConsignacion(guardarObservacion, id_consignacion);
-        
+
         resp.setContentType("text/plain");
 
         PrintWriter out = resp.getWriter();
 
         out.print(actualizarObservacionConsignacion);
         out.flush();
-        
-        
+
     }
 
     private void guardarObservacion(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
         String observacion = req.getParameter("observacion");
+        int id_consignacion = Integer.parseInt(req.getParameter("idConsignacion"));
         HttpSession sesion = req.getSession(true);
         String email = (String) sesion.getAttribute("usuario");
         int id_usuario = new DaoUsuarios().obtenerIdUsuario(email);
-        int id_consignacion = new DaoConsignaciones().obtenerIdConsignacion();
+        
         Observaciones obs = new Observaciones(observacion, id_usuario, id_consignacion);
-        
+
         int id_observacion = new DaoObservacion().guardarObservacion(obs);
-        
+
         int actualizarObservacionEnConsignacion = new DaoConsignaciones().actualizarObservacionConsignacion(id_observacion, id_consignacion);
         resp.setContentType("text/plain");
 
@@ -130,7 +129,26 @@ public class ServletObservaciones extends HttpServlet{
 
         out.print(actualizarObservacionEnConsignacion);
         out.flush();
-        
+
     }
-    
+
+    private void ObservacionTemporal(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
+        int idConsignacion = Integer.parseInt(req.getParameter("idConsignacion"));
+        String mensaje = req.getParameter("observacion");
+
+        HttpSession session = req.getSession(true);
+        String email = (String) session.getAttribute("usuario");
+        int id_usuario = new DaoUsuarios().obtenerIdUsuario(email);
+
+        
+
+        int observacionTemporal = new DaoObservacion().observacionTemporal(mensaje, id_usuario);
+        resp.setContentType("text/plain");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(observacionTemporal);
+        out.flush();
+    }
+
 }

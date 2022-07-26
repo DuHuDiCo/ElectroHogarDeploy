@@ -28,7 +28,7 @@
 
     </head>
 
-    <body id="page-top" onload='cargarDatos();'>
+    <body id="page-top" onload='cargarDatosAdmin();'>
         <input type="hidden" id="rol" value="">
         <!-- Page Wrapper -->
         <div id="wrapper">
@@ -127,7 +127,7 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Opciones:</h6>
                             <a class="collapse-item" href="gestionConsignacionesAdmin.html">Consultar</a>
-                            <a class="collapse-item" href="#">Reportes</a>
+                            <a class="collapse-item" href="informesAdmin.html">Reportes</a>
                         </div>
                     </div>
                 </li>
@@ -168,7 +168,7 @@
                             <i class="fa fa-bars"></i>
                         </button>
 
-                        <!-- Topbar Search -->
+                        <!-- Topbar Search
                         <form
                             class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                             <div class="input-group">
@@ -181,6 +181,7 @@
                                 </div>
                             </div>
                         </form>
+                        -->
 
                         <!-- Topbar Navbar -->
                         <ul class="navbar-nav ml-auto">
@@ -215,54 +216,54 @@
                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="fas fa-bell fa-fw"></i>
                             -->
-                                    <!-- Counter - Alerts
-                                    <span class="badge badge-danger badge-counter">3+</span>
+                            <!-- Counter - Alerts
+                            <span class="badge badge-danger badge-counter">3+</span>
+                        </a>
+                            -->
+                            <!-- Dropdown - Alerts -->
+                            <!-- comment 
+                            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                 aria-labelledby="alertsDropdown">
+                                <h6 class="dropdown-header">
+                                    Alerts Center
+                                </h6>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-primary">
+                                            <i class="fas fa-file-alt text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">December 12, 2019</div>
+                                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                                    </div>
                                 </a>
-                                 -->
-                                <!-- Dropdown - Alerts -->
-                                <!-- comment 
-                                <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                     aria-labelledby="alertsDropdown">
-                                    <h6 class="dropdown-header">
-                                        Alerts Center
-                                    </h6>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-primary">
-                                                <i class="fas fa-file-alt text-white"></i>
-                                            </div>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-success">
+                                            <i class="fas fa-donate text-white"></i>
                                         </div>
-                                        <div>
-                                            <div class="small text-gray-500">December 12, 2019</div>
-                                            <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">December 7, 2019</div>
+                                        $290.29 has been deposited into your account!
+                                    </div>
+                                </a>
+                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-warning">
+                                            <i class="fas fa-exclamation-triangle text-white"></i>
                                         </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-success">
-                                                <i class="fas fa-donate text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="small text-gray-500">December 7, 2019</div>
-                                            $290.29 has been deposited into your account!
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item d-flex align-items-center" href="#">
-                                        <div class="mr-3">
-                                            <div class="icon-circle bg-warning">
-                                                <i class="fas fa-exclamation-triangle text-white"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <div class="small text-gray-500">December 2, 2019</div>
-                                            Spending Alert: We've noticed unusually high spending for your account.
-                                        </div>
-                                    </a>
-                                    <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
-                                </div>
-                            </li>
-                           -->
+                                    </div>
+                                    <div>
+                                        <div class="small text-gray-500">December 2, 2019</div>
+                                        Spending Alert: We've noticed unusually high spending for your account.
+                                    </div>
+                                </a>
+                                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+                            </div>
+                        </li>
+                            -->
 
                             <!-- Nav Item - Messages -->
                             <!-- 
@@ -339,7 +340,7 @@
 
                             <div class="topbar-divider d-none d-sm-block"></div>
 
-                           <!-- Nav Item - User Information -->
+                            <!-- Nav Item - User Information -->
                             <li class="nav-item dropdown no-arrow">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -451,6 +452,7 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
+                                                            <input type="hidden" id="validacionVacio" name="name" value="">
 
                                                             <table class="table table-hover" id="tblCliente" style="display: none;">
                                                                 <thead>
@@ -530,8 +532,17 @@
 
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Lista Consignaciones</h6>
+                                     <div class="row">
+                                        <div class="col-md-10">
+                                            <h6 class="m-0 font-weight-bold text-primary">Lista Consignaciones</h6>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <a onclick="generarReporte();" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generar Reporte</a>
+                                        </div>
+                                        
+                                    </div>
                                 </div>
+
                                 <div class="card-body">
 
                                     <div class="row" >
@@ -548,7 +559,7 @@
                                                 <div class="input-group">
                                                     <input type="text" class="form-control bg-light border-0 small" placeholder="Buscar" aria-label="Search" aria-describedby="basic-addon2" id="txtCedula"> 
                                                     <div class="input-group-append">
-                                                        <a class="btn btn-primary" onclick="consignacionesCedula();">
+                                                        <a class="btn btn-primary" onclick="consignacionesCedulaAdmin();">
                                                             <i class="fas fa-search fa-sm"></i>
                                                         </a>
                                                     </div>
@@ -687,7 +698,7 @@
                                         </div>
 
                                     </div>
-
+                                    <input type="hidden" id="nuevoEstado" name="name" value="">
 
 
                                 </form>
@@ -696,9 +707,28 @@
 
 
                             <div class="modal-footer">
+                                <a href="" id="btnCancelarConsignacion" class="btn btn-danger" style="display: none;">Cancelar Consignacion</a>
                                 <a href="#" id="btnNoEnviarObser"  class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
                                 <a href="#" onclick="actualizarConsignacion();" id="bntEnviarObser" onclick="" class="btn btn-primary">Actualizar</a>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Modal Image Consigancion -->
+                <div class="modal fade" id="staticBackdropImage" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+
+                        <div class="modal-content">
+
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+
+                            <img src="" id="imagenConsigancion" alt="alt" />
+
+
                         </div>
                     </div>
                 </div>
@@ -719,7 +749,62 @@
                             </div>
                             <div class="modal-footer">
                                 <a href="#" id="btnNoEnviarObser" onclick="noCrearObservacion();" class="btn btn-secondary" data-dismiss="modal">No</a>
-                                <a href="#" id="bntEnviarObser" onclick="crearObservacion();" class="btn btn-primary">Si</a>
+                                <a href="#" id="bntEnviarObser" onclick="guardarConsignacionConObservacion();" class="btn btn-primary">Si</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Observaciones -->
+                <div class="modal fade" id="staticBackdropObserAdmin" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropObserLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropObserLabel">Historial de Observaciones</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+
+
+                                <h6>Crear Nueva Observacion</h6>
+
+
+
+
+                                <div class="row">
+
+                                    <div class="col-md-9 input-group">
+                                        <input class="form-control" type="text" placeholder="Ingrese el Texto de la Observacion" id="txtObservacion">
+                                        <input type="hidden" id="idConsignacion" name="name" value="">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <button type="button"  id="enviarObservacionCon" class="btn btn-primary btn-user btn-sm mt-1">Crear Nueva</button>
+                                    </div>
+
+                                </div>
+
+                                <table class="table table-responsive mt-3" style="overflow-y: auto;height: 400px;" id="tableObservaciones">
+                                    <thead>
+                                        <tr>
+                                            <th>N°</th>
+                                            <th>Observacion</th>
+                                            <th>Fecha</th>
+                                            <th>Usuario</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="modal-footer">
+                                <a type="button" id="" class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
+
                             </div>
                         </div>
                     </div>
@@ -770,8 +855,9 @@
             <script  src="javascript/session.js"></script>
             <script  src="javascript/AdminJS/funciones.js"></script>
             <script src="javascript/CarteraJS/consignaciones.js"></script>
-
+            <script src="javascript/ContabilidadJS/consignaciones.js"></script>
             <script src="javascript/AdminJS/consignaciones.js"></script>
+
 
 
 

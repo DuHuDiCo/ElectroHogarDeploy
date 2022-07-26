@@ -145,6 +145,15 @@
     font-weight: 400;
     font-family: inherit;
 }
+#sltUsuariosReportes{
+    width: 370px;
+    padding: 12px;
+    border-radius: 40px;
+    border: 1px solid #d1d3e2;
+    color:#6e707e;
+    font-weight: 400;
+    font-family: inherit;
+}
 #sltEstadoConsignacionContabilidad{
     width: 170px;
     padding: 12px;
@@ -155,6 +164,16 @@
     font-family: inherit;
 }
 #sltEstadoConsignacionCaja{
+    width: 170px;
+    padding: 12px;
+    border-radius: 40px;
+    border: 1px solid #d1d3e2;
+    color:#6e707e;
+    font-weight: 400;
+    font-family: inherit;
+}
+
+#sltEstadoConsignacionAdmin{
     width: 170px;
     padding: 12px;
     border-radius: 40px;

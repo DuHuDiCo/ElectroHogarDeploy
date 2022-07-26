@@ -13,6 +13,7 @@ public class Observaciones {
     private int id_usuario;
     private int id_consignacion;
     private String nombre_usuario;
+    private String Error;
 
     public Observaciones() {
     }
@@ -96,6 +97,14 @@ public class Observaciones {
 
     public void setId_consignacion(int id_consignacion) {
         this.id_consignacion = id_consignacion;
+    }
+
+    public String getError() {
+        return Error;
+    }
+
+    public void setError(String Error) {
+        this.Error = Error;
     }
     
     

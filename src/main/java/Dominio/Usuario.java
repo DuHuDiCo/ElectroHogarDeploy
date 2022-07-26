@@ -25,6 +25,7 @@ public class Usuario extends Sedes{
     private int id_rol;
     private int id_sede;
     private String nombre_rol;
+    private String error;
 
     public Usuario() {
     }
@@ -138,6 +139,16 @@ public class Usuario extends Sedes{
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+    
+    
 
     public String getPassword() {
         return password;

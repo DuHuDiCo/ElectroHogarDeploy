@@ -73,7 +73,7 @@
                         <div class="bg-white py-2 collapse-inner rounded">
                             <h6 class="collapse-header">Opciones:</h6>
                             <a class="collapse-item" href="gestionConsignacionesCartera.html">Consultar</a>
-                            <a class="collapse-item" href="#">Reportes</a>
+                            <a class="collapse-item" href="informesCartera.html">Reportes</a>
                         </div>
                     </div>
                 </li>
@@ -113,7 +113,7 @@
                             <i class="fa fa-bars"></i>
                         </button>
 
-                        <!-- Topbar Search -->
+                        <!-- Topbar Search
                         <form
                             class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                             <div class="input-group">
@@ -126,6 +126,7 @@
                                 </div>
                             </div>
                         </form>
+                        -->
 
                         <!-- Topbar Navbar -->
                         <ul class="navbar-nav ml-auto">
@@ -475,7 +476,17 @@
 
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Lista Consignaciones</h6>
+                                    <div class="row">
+                                        <div class="col-md-10">
+                                            <h6 class="m-0 font-weight-bold text-primary">Lista Consignaciones</h6>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <a onclick="generarReporte();" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generar Reporte</a>
+                                        </div>
+                                        
+                                    </div>
+                                    
+                                    
                                 </div>
                                 <div class="card-body">
 
@@ -611,6 +622,7 @@
                                                 </div>
 
                                             </div>
+                                            <input type="hidden" id="nuevoEstado" name="name" value="">
 
 
 
@@ -620,103 +632,160 @@
 
 
                                     <div class="modal-footer">
-                                        <a href="#" id="btnNoEnviarObser"  class="btn btn-secondary" data-dismiss="modal">Cancelar</a>
+                                        <a href="" onclick="cancelarConsignacion();" id="btnCancelarConsignacion" class="btn btn-danger" style="display: none;">Cancelar Consignacion</a>
+                                        <a href="#" id="btnNoEnviarObser"  class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
                                         <a href="#" onclick="actualizarConsignacion();" id="bntEnviarObser" onclick="" class="btn btn-primary">Actualizar</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-
-                        <!-- Modal Guardar Consigancion-->
-                        <div class="modal fade" id="modalConsignacion" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <!-- Modal Observaciones -->
+                        <div class="modal fade" id="staticBackdropObserCartera" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropObserLabel" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="modalConsignacionLabel">Advertencia</h5>
+                                        <h5 class="modal-title" id="staticBackdropObserLabel">Historial de Observaciones</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <h3>¿Deseas Agregar una Observacion?</h3>
-                                        <textarea id="observacionGuardarConsig" name="observacionGuardarConsig" rows="5" cols="10" class="form-control"></textarea>
+
+
+                                        <h6>Crear Nueva Observacion</h6>
+
+
+
+
+                                        <div class="row">
+
+                                            <div class="col-md-9 input-group">
+                                                <input class="form-control" type="text" placeholder="Ingrese el Texto de la Observacion" id="txtObservacion">
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                <button type="button"  id="enviarObservacionCon" class="btn btn-primary btn-user btn-sm mt-1">Crear Nueva</button>
+                                            </div>
+
+                                        </div>
+
+                                        <table class="table table-responsive mt-3" style="overflow-y: auto;height: 400px;" id="tableObservaciones">
+                                            <thead>
+                                                <tr>
+                                                    <th>N°</th>
+                                                    <th>Observacion</th>
+                                                    <th>Fecha</th>
+                                                    <th>Usuario</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            </tbody>
+                                        </table>
                                     </div>
+
                                     <div class="modal-footer">
-                                        <a href="#" id="btnNoEnviarObser" onclick="noCrearObservacion();" class="btn btn-secondary" data-dismiss="modal">No</a>
-                                        <a href="#" id="bntEnviarObser" onclick="crearObservacion();" class="btn btn-primary">Si</a>
+                                        
+                                        <a type="button" id="" class="btn btn-secondary" data-dismiss="modal">Cerrar</a>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Footer -->
-                        <footer class="sticky-footer bg-white">
-                            <div class="container my-auto">
-                                <div class="copyright text-center my-auto">
-                                    <span>Copyright &copy; Your Website 2020</span>
+
+                    <!-- Modal Guardar Consigancion-->
+                    <div class="modal fade" id="modalConsignacion" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="modalConsignacionLabel">Advertencia</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <h3>¿Deseas Agregar una Observacion?</h3>
+                                    <textarea id="observacionGuardarConsig" name="observacionGuardarConsig" rows="5" cols="10" class="form-control"></textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="#" id="btnNoEnviarObser" onclick="noCrearObservacion();" class="btn btn-secondary" data-dismiss="modal">No</a>
+                                    <a href="#" id="bntEnviarObser" onclick="guardarConsignacionConObservacion();" class="btn btn-primary">Si</a>
                                 </div>
                             </div>
-                        </footer>
-                        <!-- End of Footer -->
-
+                        </div>
                     </div>
-                    <!-- End of Content Wrapper -->
+
+                    <!-- Footer -->
+                    <footer class="sticky-footer bg-white">
+                        <div class="container my-auto">
+                            <div class="copyright text-center my-auto">
+                                <span>Copyright &copy; Your Website 2020</span>
+                            </div>
+                        </div>
+                    </footer>
+                    <!-- End of Footer -->
 
                 </div>
-                <!-- End of Page Wrapper -->
+                <!-- End of Content Wrapper -->
 
-                <!-- Scroll to Top Button-->
-                <a class="scroll-to-top rounded" href="#page-top">
-                    <i class="fas fa-angle-up"></i>
-                </a>
+            </div>
+            <!-- End of Page Wrapper -->
 
-                <!-- Logout Modal-->
-                <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                                <a class="btn btn-primary" href="login.html">Logout</a>
-                            </div>
+            <!-- Scroll to Top Button-->
+            <a class="scroll-to-top rounded" href="#page-top">
+                <i class="fas fa-angle-up"></i>
+            </a>
+
+            <!-- Logout Modal-->
+            <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                            <a class="btn btn-primary" href="login.html">Logout</a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>     
-        <!-- Bootstrap core JavaScript-->
-        <script src="vendor/jquery/jquery.min.js"></script>
-        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        </div>
+    </div>     
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-        <!-- Core plugin JavaScript-->
-        <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
 
-        <!-- Custom scripts for all pages-->
-        <script src="js/sb-admin-2.min.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
 
-        <!-- Page level plugins -->
-        <!-- <script src="vendor/datatables/jquery.dataTables.min.js"></script> -->
-        <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <!-- Page level plugins -->
+    <!-- <script src="vendor/datatables/jquery.dataTables.min.js"></script> -->
+    <script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
 
-        <!-- Page level custom scripts -->
-        <script src="js/demo/datatables-demo.js"></script>
+    <!-- Page level custom scripts -->
+    <script src="js/demo/datatables-demo.js"></script>
 
 
 
-        <script  src="javascript/usuarios.js"></script>
-        <script src="javascript/iniciarSesion.js"></script>
-        <script  src="javascript/session.js"></script>
-        <script  src="javascript/AdminJS/funciones.js"></script>
-        <script src="javascript/CarteraJS/consignaciones.js"></script>
+    <script  src="javascript/usuarios.js"></script>
+    <script src="javascript/iniciarSesion.js"></script>
+    <script  src="javascript/session.js"></script>
+    <script  src="javascript/AdminJS/funciones.js"></script>
+    <script src="javascript/CarteraJS/consignaciones.js"></script>
 
-    </body>
+</body>
 
 </html>

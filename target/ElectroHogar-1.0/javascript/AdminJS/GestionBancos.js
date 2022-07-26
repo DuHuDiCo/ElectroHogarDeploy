@@ -152,9 +152,10 @@ function listarBancos() {
         var contador = 1;
 
         for (var banco of json) {
+            
             var btnEditarBanco = '<td><a href="#" onclick="editarBanco(' + banco.idPlataforma + ')" class="btn btn-primary"><i class="fas fa-pen"></i></a></td>';
-            var btnEditarTipoPago = '<td><a href="#" onclick="editarTipoPago(' + banco.idTipoPago + ')" class="btn btn-primary"><i class="fas fa-pen"></i></a></td>';
-            var estadoHtml = '<tr> <td>' + contador + '</td><td>'+banco.nombre_plataforma+'</td>'+btnEditarBanco+'<td>'+banco.tipo_pago+'</td>' + btnEditarTipoPago + '</tr>';
+            
+            var estadoHtml = '<tr> <td>' + contador + '</td><td>'+banco.nombre_plataforma+'</td><td>'+banco.tipo_pago+'</td>' + btnEditarBanco + '</tr>';
             html += estadoHtml;
             contador = contador + 1;
         }
@@ -172,4 +173,8 @@ function listarBancos() {
 
 }
 
+function editarBanco(idPlataforma){
+   $('#modalEditarEstado').modal('show');
 
+
+}

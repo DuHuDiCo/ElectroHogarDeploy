@@ -10,7 +10,7 @@ import org.joda.time.DateTime;
 
 public class Dao {
 
-    private static final String SQL_SELECT_INICIARSESION = "SELECT usuario.email, usuario.password, rol.nombre_rol FROM usuario INNER JOIN rol ON usuario.id_rol = rol.idRol WHERE usuario.email = ?";
+    private static final String SQL_SELECT_INICIARSESION = "SELECT usuario.email, usuario.password, usuario.status, rol.nombre_rol FROM usuario INNER JOIN rol ON usuario.id_rol = rol.idRol WHERE usuario.email = ?";
     private static final String SQL_INSERT_USUARIO = "INSERT INTO usuario(nombre, tipo_documento, n_documento, email, password, telefono, fecha_creacion, status, id_rol, id_sede) VALUES (?,?,?,?,?,?,?,?,?,?)";
     private static final String SQL_UPDATE_USUARIO =  "UPDATE usuario SET estado_conexion = ?, ultima_sesion = NOW() WHERE email = ?";
     private static final String SQL_SELECT_NOMBREUSUARIO = "SELECT nombre FROM usuario WHERE email = ?";
@@ -33,9 +33,11 @@ public class Dao {
             if (valid) {
                 String correo = rs.getString("email");
                 String password = rs.getString("password");
+                int status= rs.getInt("status");
                 String nombreRol = rs.getString("nombre_rol");
 
                 user = new Usuario(correo, password, nombreRol);
+                user.setStatus(status);
             }
 
         } catch (SQLException ex) {

@@ -1,16 +1,17 @@
-function listarObligaciones(){
+function listarObligaciones() {
     validarSession();
     obtenerNombreUsuario();
     
-     $.ajax({
+
+    $.ajax({
         method: "GET",
         url: "ServletControladorObligaciones?accion=listarObligaciones"
 
     }).done(function (data) {
         var datos = JSON.stringify(data);
         var json = JSON.parse(datos);
-       
-        
+
+
         $("#dataTable tbody").empty();
 
         var contador = 1;
@@ -34,3 +35,4 @@ function listarObligaciones(){
     });
 
 }
+

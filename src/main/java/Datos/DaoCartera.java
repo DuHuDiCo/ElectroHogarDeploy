@@ -18,11 +18,12 @@ public class DaoCartera {
     
     private static final String SQL_SELEC_IDARCHIVO = "SELECT idFile FROM files WHERE nombre = ?";
     private static final String SQL_SELEC_IDUSUARIO = "SELECT idUsuario FROM usuario WHERE email = ?";
-    private static final String SQL_INSERT_ACTUALIZACION = "INSERT INTO actualizacion(fecha_actualizacion, id_estado, id_usuarios) VALUES (?,?,?)";
+    private static final String SQL_INSERT_ACTUALIZACION = "INSERT INTO actualizacion(fecha_actualizacion, id_estado, id_usuarios) VALUES (NOW(),?,?)";
     private static final String SQL_SELEC_IDACTUALIZACION = "SELECT MAX(idActualizacion) FROM actualizacion ";
     private static final String SQL_INSERT_CONSIGNACION = "INSERT INTO consignacion(num_recibo, fecha_creacion, fecha_pago, valor, id_files, id_actualizacion, id_usuario, id_plataforma, id_obligacion)"
             + " VALUES (?,?,?,?,?,?,?,?,?)";
     private static final String SQL_SELEC_BANCOS = "SELECT plataforma.idPlataforma, plataforma.nombre_plataforma, tipopago.tipo_pago FROM plataforma INNER JOIN tipopago ON plataforma.id_tipoPago = tipopago.idTipoPago";
+    private static final String SQL_SELECT_IDCONSIGNACION = "SELECT  MAX(idConsignacion) FROM consignacion";
     
     public int obtenerIdEstado(String estado) throws ClassNotFoundException, SQLException {
         Connection con = null;
@@ -147,9 +148,9 @@ public class DaoCartera {
         try {
             con = Conexion.getConnection();
             stmt = con.prepareStatement(SQL_INSERT_ACTUALIZACION);
-            stmt.setDate(1, actu.getFecha_actualizacion());
-            stmt.setInt(2, actu.getId_estado());
-            stmt.setInt(3, actu.getId_usuarios());
+            
+            stmt.setInt(1, actu.getId_estado());
+            stmt.setInt(2, actu.getId_usuarios());
             
 
             rown = stmt.executeUpdate();
@@ -161,7 +162,7 @@ public class DaoCartera {
             Conexion.close(stmt);
 
         }
-        return rown;
+        return obtenerIdActualizacion();
     }
      
      public int obtenerIdActualizacion() throws ClassNotFoundException, SQLException {
@@ -178,9 +179,9 @@ public class DaoCartera {
             rs = stmt.executeQuery();
             
              while (rs.next()) {
-                int idActualizacion = rs.getInt("MAX(idActualizacion)");
+                int idConsignacion = rs.getInt("MAX(idActualizacion)");
                 
-                rown = idActualizacion;
+                rown = idConsignacion;
             }
 
         } catch (SQLException ex) {
@@ -223,10 +224,37 @@ public class DaoCartera {
             Conexion.close(stmt);
 
         }
-        return rown;
+        return obtenerIdConsignacion();
     }
      
-     
+    public int obtenerIdConsignacion() throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        
+        int rown = 0;
+        try {
+            con = Conexion.getConnection();
+            stmt = con.prepareStatement(SQL_SELECT_IDCONSIGNACION);
+            
+
+            rs = stmt.executeQuery();
+            
+             while (rs.next()) {
+                int idActualizacion = rs.getInt("MAX(idConsignacion)");
+                
+                rown = idActualizacion;
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.out);
+        } finally {
+            Conexion.close(con);
+            Conexion.close(stmt);
+
+        }
+        return rown;
+    } 
      
      public List<Plataforma> listarBanco() throws ClassNotFoundException {
         Connection con = null;

@@ -18,7 +18,7 @@ function traerDatosPerfil() {
 
         document.getElementById("nombreUsuarioPerfil").value = json.nombre_usuario;
         document.getElementById("emailperfil").value = json.email;
-
+        document.getElementById("numeroCedulaPerfil").value = json.n_documento;
 
         document.getElementById("telefonoPerfil").value = json.telefonoUser;
 
@@ -41,6 +41,7 @@ function editarPerfil() {
     document.getElementById("passwordPerfil").disabled = false;
     document.getElementById("telefonoPerfil").disabled = false;
     document.getElementById("RepetirPasswordPerfil").disabled = false;
+    document.getElementById("numeroCedulaPerfil").disabled = false;
 
     document.getElementById("actualizarPerfil").style.display = "block";
     document.getElementById("RepetirPasswordPerfil").style.display = "block";
@@ -54,6 +55,7 @@ function DatosPerfil() {
     validarSession();
     var datos = {};
     datos.nombre = document.getElementById("nombreUsuarioPerfil").value;
+    datos.n_documento = document.getElementById("numeroCedulaPerfil").value;
     datos.email = document.getElementById("emailperfil").value;
     datos.telefono = document.getElementById("telefonoPerfil").value;
 
@@ -90,8 +92,8 @@ function actualizarPerfil(datos) {
     }).done(function (data) {
 
         var datos = data;
-        
-        if(datos > 0){
+
+        if (datos > 0) {
             Swal.fire({
                 position: 'top-end',
                 icon: 'success',
@@ -100,7 +102,7 @@ function actualizarPerfil(datos) {
                 timer: 2000
             });
             setTimeout(recargarPagina, 2000);
-        }else{
+        } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Error al Actualizar Perfil',
@@ -108,7 +110,7 @@ function actualizarPerfil(datos) {
                 footer: '<a href="">Why do I have this issue?</a>'
             });
         }
-        
+
 
         // imprimimos la respuesta
     }).fail(function () {
@@ -119,6 +121,6 @@ function actualizarPerfil(datos) {
     });
 }
 
-function recargarPagina(){
+function recargarPagina() {
     window.location.reload();
 }

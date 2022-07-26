@@ -1,14 +1,12 @@
 package Web;
 
 import Datos.DaoCartera;
-import Datos.DaoConsignaciones;
 import Datos.DaoObligaciones;
-import Datos.DaoObservacion;
-import Datos.DaoUsuarios;
+import Datos.DaoConsignaciones2;
+
 import Dominio.Actualizacion;
 import Dominio.Consignacion;
 import Dominio.Archivo;
-import Dominio.Observaciones;
 import Dominio.Plataforma;
 import com.google.gson.Gson;
 import java.io.File;
@@ -39,8 +37,8 @@ import javax.servlet.http.Part;
 @MultipartConfig
 @WebServlet(urlPatterns = {"/ServletControladorCartera"})
 public class ServletControladorCartera extends HttpServlet {
-    //J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\img\\
-    private final String rutaFiles = "/opt/glassfish/glassfish/domains/domain1/applications/ROOT/archivos/img/";
+
+    private final String rutaFiles = "J:\\Duvan Humberto Diaz Contreras\\ElectroHogar\\ElectroHogarGit\\ElectroHogar\\ElectroHogarPrueba\\src\\main\\webapp\\archivos\\img\\";
     private final File uploads = new File(rutaFiles);
     private final String[] extens = {".ico", ".png", ".jpg", ".jpeg"};
 
@@ -124,9 +122,11 @@ public class ServletControladorCartera extends HttpServlet {
             int id_obligacionCreada = new DaoObligaciones().obtenerIdObligacionCreada(cedulaCliente);
 
             //guardamos la consignacion con el nuevo cliente guardado
-            int SaveConsig = guardarConsignacion(part, fecha_creacion, id_usuario, id_estado, num_recibo, fecha_pago, valor, plataforma, id_obligacionCreada);
+            int idConsignacion = guardar_Consignacion(part, fecha_creacion, id_usuario, id_estado, num_recibo, fecha_pago, valor, plataforma, id_obligacionCreada);
+            int guardarConsignacionCareteraTemporal = new DaoConsignaciones2().obtenerConsignacionById(idConsignacion, id_usuario);
+            
 
-            String respuesta = Integer.toString(SaveConsig);
+            String respuesta = Integer.toString(idConsignacion);
             resp.setContentType("text/plain");
 
             PrintWriter out = resp.getWriter();
@@ -135,10 +135,11 @@ public class ServletControladorCartera extends HttpServlet {
             out.flush();
         } else {
             if (isExtension(part.getSubmittedFileName(), extens)) {
+
+                int SaveConsig = guardar_Consignacion(part, fecha_creacion, id_usuario, id_estado, num_recibo, fecha_pago, valor, plataforma, id_obligacion);
+                int guardarConsignacionCareteraTemporal = new DaoConsignaciones2().obtenerConsignacionById(SaveConsig, id_usuario);
                 
-                int SaveConsig = guardarConsignacion(part, fecha_creacion, id_usuario, id_estado, num_recibo, fecha_pago, valor, plataforma, id_obligacion);
-               
-               
+
                 resp.setContentType("text/plain");
 
                 PrintWriter out = resp.getWriter();
@@ -151,7 +152,7 @@ public class ServletControladorCartera extends HttpServlet {
 
     }
 
-    private int guardarConsignacion(Part part, Date fecha_creacion, int id_usuario, int id_estado, String num_recibo, Date fecha_pago, float valor, int plataforma, int id_obligacion) throws ClassNotFoundException, SQLException {
+    private int guardar_Consignacion(Part part, Date fecha_creacion, int id_usuario, int id_estado, String num_recibo, Date fecha_pago, float valor, int plataforma, int id_obligacion) throws ClassNotFoundException, SQLException {
         String name = part.getSubmittedFileName();
         String photo = saveFile(part, uploads);
 
@@ -163,12 +164,12 @@ public class ServletControladorCartera extends HttpServlet {
         //Guardamos la primera actualizacion(por defecto:pendiente)
         Actualizacion actu = new Actualizacion(fecha_creacion, id_estado, id_usuario);
         int upd = new DaoCartera().guardarActualizacion(actu);
-        int idActu = new DaoCartera().obtenerIdActualizacion();
 
         //Guardamos la consignacion en la BD
-        Consignacion consig = new Consignacion(num_recibo, fecha_creacion, fecha_pago, valor, idFile, idActu, id_usuario, plataforma, id_obligacion);
-        int SaveConsig = new DaoCartera().guardarConsignacion(consig);
-        return SaveConsig;
+        Consignacion consig = new Consignacion(num_recibo, fecha_creacion, fecha_pago, valor, idFile, upd, id_usuario, plataforma, id_obligacion);
+        int idConsignacion = new DaoCartera().guardarConsignacion(consig);
+
+        return idConsignacion;
     }
 
     private int obtenerIdEstado(String dato) throws ClassNotFoundException, SQLException {

@@ -2,6 +2,8 @@
  * ©2011-2017 SpryMedia Ltd - datatables.net/license
  */
 
+/* global define */
+
 /**
  * DataTables integration for Bootstrap 4. This requires Bootstrap 4 and
  * DataTables 1.10 or newer.

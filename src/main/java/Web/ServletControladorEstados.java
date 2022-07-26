@@ -6,6 +6,7 @@ import Dominio.Estados;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,15 +24,22 @@ public class ServletControladorEstados extends HttpServlet {
         String accion = req.getParameter("accion");
         if (accion != null) {
             switch (accion) {
-                case "cargarEstados":
-                {
+                case "cargarEstados": {
                     try {
                         this.cargarEstados(req, resp);
                     } catch (ClassNotFoundException ex) {
                         Logger.getLogger(ServletControladorEstados.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
-                    break;
+                break;
+                case "obtenerEstadoById": {
+                    try {
+                        this.obtenerEstadoById(req, resp);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(ServletControladorEstados.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
 
             }
         }
@@ -42,6 +50,14 @@ public class ServletControladorEstados extends HttpServlet {
         String accion = req.getParameter("accion");
         if (accion != null) {
             switch (accion) {
+                case "actualizarEstado": {
+                    try {
+                        this.actualizarEstado(req, resp);
+                    } catch (ClassNotFoundException | SQLException ex) {
+                        Logger.getLogger(ServletControladorEstados.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+                break;
             }
         }
     }
@@ -57,6 +73,35 @@ public class ServletControladorEstados extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         out.print(json);
+        out.flush();
+    }
+
+    private void obtenerEstadoById(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
+        int idEstado = Integer.parseInt(req.getParameter("idEstado"));
+        Estados estado = new DaoEstados().obtenerEstadoById(idEstado);
+        Gson gson = new Gson();
+
+        String json = gson.toJson(estado);
+        resp.setContentType("application/json");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(json);
+        out.flush();
+    }
+
+    private void actualizarEstado(HttpServletRequest req, HttpServletResponse resp) throws ClassNotFoundException, SQLException, IOException {
+        int idEstado = Integer.parseInt(req.getParameter("idEstado"));
+        String estado = req.getParameter("nombre_estado");
+        
+        Estados est = new Estados(idEstado, estado);
+        
+        int actualizarEstado = new DaoEstados().actualizarEstados(est);
+        resp.setContentType("text/plain");
+
+        PrintWriter out = resp.getWriter();
+
+        out.print(actualizarEstado);
         out.flush();
     }
 }

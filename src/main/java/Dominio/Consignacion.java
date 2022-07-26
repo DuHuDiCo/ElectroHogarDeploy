@@ -20,6 +20,7 @@ public class Consignacion {
     private int id_estado;
     private String nombre_estado;
     private int id_usuario;
+    private String nombreUsuario;
     private int id_plataforma;
     private String nombre_plataforma;
     private int id_tipoPago;
@@ -31,6 +32,8 @@ public class Consignacion {
     private Date fecha_obligacion;
     private int id_sede;
     private String nombre_sede;
+    private int id_observacion;
+    private int id_aplicado;
 
     public Consignacion() {
         
@@ -75,7 +78,7 @@ public class Consignacion {
     
     
 
-    public Consignacion(int idConsignacion, String num_recibo, Date fecha_creacion, Date fecha_pago, float valor, int id_files, int id_actualizacion, int id_usuario, int id_plataforma, int id_obligacion) {
+    public Consignacion(int idConsignacion, String num_recibo, Date fecha_creacion, Date fecha_pago, float valor, int id_files, int id_actualizacion, int id_usuario, int id_plataforma, int id_obligacion, int id_observacion) {
         this.idConsignacion = idConsignacion;
         this.num_recibo = num_recibo;
         this.fecha_creacion = fecha_creacion;
@@ -86,8 +89,26 @@ public class Consignacion {
         this.id_usuario = id_usuario;
         this.id_plataforma = id_plataforma;
         this.id_obligacion = id_obligacion;
+        this.id_observacion = id_observacion;
+        
     }
-
+    
+     public Consignacion(int idConsignacion, String num_recibo, Date fecha_creacion, Date fecha_pago, float valor, int id_files, int id_actualizacion, int id_usuario, int id_plataforma, int id_obligacion, int id_observacion, int id_aplicado) {
+        this.idConsignacion = idConsignacion;
+        this.num_recibo = num_recibo;
+        this.fecha_creacion = fecha_creacion;
+        this.fecha_pago = fecha_pago;
+        this.valor = valor;
+        this.id_files = id_files;
+        this.id_actualizacion = id_actualizacion;
+        this.id_usuario = id_usuario;
+        this.id_plataforma = id_plataforma;
+        this.id_obligacion = id_obligacion;
+        this.id_observacion = id_observacion;
+        this.id_aplicado = id_aplicado;
+    }
+    
+    
     public Consignacion(int idConsignacion, String num_recibo, Date fecha_creacion, Date fecha_pago, float valor, DateTime fecha_actualizacion, String nombre_estado, String nombre_plataforma, String nombre_titular, String nombre_sede) {
         this.idConsignacion = idConsignacion;
         this.num_recibo = num_recibo;
@@ -97,8 +118,9 @@ public class Consignacion {
         this.fecha_actualizacion = fecha_actualizacion;
         this.nombre_estado = nombre_estado;
         this.nombre_plataforma = nombre_plataforma;
-        this.nombre_titular = nombre_titular;
+        this.numero_documento = nombre_titular;
         this.nombre_sede = nombre_sede;
+        
     }
     
     
@@ -170,12 +192,37 @@ public class Consignacion {
         this.tipo_pago = tipo_pago;
     }
 
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+    
+
     public String getNumero_documento() {
         return numero_documento;
     }
 
     public void setNumero_documento(String numero_documento) {
         this.numero_documento = numero_documento;
+    }
+
+    public int getId_observacion() {
+        return id_observacion;
+    }
+
+    public void setId_observacion(int id_observacion) {
+        this.id_observacion = id_observacion;
+    }
+
+    public int getId_aplicado() {
+        return id_aplicado;
+    }
+
+    public void setId_aplicado(int id_aplicado) {
+        this.id_aplicado = id_aplicado;
     }
     
     
