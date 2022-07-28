@@ -108,16 +108,16 @@ public class FuncionesGenerales {
         String ruta = null;
         switch(cargo){
             case "Administrador":
-                ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/reportes/Admin/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+                ruta = "./archivos/reportes/Admin/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
             break;
             case "Cartera":
-                ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/reportes/Cartera/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+                ruta = "./archivos/reportes/Cartera/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
             break;
             case "Contabilidad":
-                ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/reportes/Contabilidad/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+                ruta = "./archivos/reportes/Contabilidad/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
             break;
             case "Caja":
-                ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/reportes/Caja/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+                ruta = "./archivos/reportes/Caja/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
             break;
         }
         
