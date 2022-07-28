@@ -108,16 +108,16 @@ public class FuncionesGenerales {
         String ruta = null;
         switch(cargo){
             case "Administrador":
-                ruta = "/var/lib/tomcat9/webapps/ElectroHogar-1.0/archivos/reportes/Admin/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+                ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/reportes/Admin/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
             break;
             case "Cartera":
-                ruta = "/var/lib/tomcat9/webapps/ElectroHogar-1.0/archivos/reportes/Cartera/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+                ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/reportes/Cartera/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
             break;
             case "Contabilidad":
-                ruta = "/var/lib/tomcat9/webapps/ElectroHogar-1.0/archivos/reportes/Contabilidad/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+                ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/reportes/Contabilidad/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
             break;
             case "Caja":
-                ruta = "/var/lib/tomcat9/webapps/ElectroHogar-1.0/archivos/reportes/Caja/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+                ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/reportes/Caja/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
             break;
         }
         
@@ -298,7 +298,7 @@ public class FuncionesGenerales {
         String ciudad = new DaoUsuarios().obtenerSedeUsuario(email);
         String nombre = new DaoConsignaciones().obtenerNombreUsuario(email);
         int random = (int) (Math.random() * 100);
-        String ruta = "/var/lib/tomcat9/webapps/ElectroHogar-1.0/archivos/reportes/Caja/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
+        String ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/reportes/Caja/reporte_" + fecha + "_" + random + "_" + cargo + ".pdf";
 
         float heightDoc = 792;
         float widthDoc = 612;

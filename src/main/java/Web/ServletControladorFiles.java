@@ -42,7 +42,7 @@ import javax.servlet.http.Part;
 @WebServlet(urlPatterns = {"/ServletControladorFiles"})
 public class ServletControladorFiles extends HttpServlet {
 
-    private final String rutaFiles = "/var/lib/tomcat9/webapps/ElectroHogar-1.0/archivos/txt/";
+    private final String rutaFiles = "/var/lib/tomcat9/webapps/ROOT/archivos/txt/";
     private final File uploads = new File(rutaFiles);
     private final String[] extens = {".txt"};
 
@@ -223,7 +223,7 @@ public class ServletControladorFiles extends HttpServlet {
         int obtenerIdTxt = new DaoFiles().obtenerIdFileTxt(nombre);
         String linea = "";
         String delimitante = "\\|";
-        String ruta = "/var/lib/tomcat9/webapps/ElectroHogar-1.0/archivos/txt/" + nombre;
+        String ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/txt/" + nombre;
 
         Obligaciones obligacion = null;
         int guardarObliga = 0;

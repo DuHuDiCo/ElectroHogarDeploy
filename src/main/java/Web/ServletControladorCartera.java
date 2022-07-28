@@ -38,7 +38,7 @@ import javax.servlet.http.Part;
 @WebServlet(urlPatterns = {"/ServletControladorCartera"})
 public class ServletControladorCartera extends HttpServlet {
 
-    private final String rutaFiles = "/var/lib/tomcat9/webapps/ElectroHogar-1.0/img/";
+    private final String rutaFiles = "/var/lib/tomcat9/webapps/ROOT/img/";
     private final File uploads = new File(rutaFiles);
     private final String[] extens = {".ico", ".png", ".jpg", ".jpeg"};
 
