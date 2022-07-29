@@ -42,7 +42,7 @@ import javax.servlet.http.Part;
 @WebServlet(urlPatterns = {"/ServletControladorFiles"})
 public class ServletControladorFiles extends HttpServlet {
 
-    private final String rutaFiles = "/var/lib/tomcat9/webapps/ROOT/archivos/txt/";
+    private final String rutaFiles = "/ROOT/archivos/txt/";
     private final File uploads = new File(rutaFiles);
     private final String[] extens = {".txt"};
 
@@ -223,7 +223,7 @@ public class ServletControladorFiles extends HttpServlet {
         int obtenerIdTxt = new DaoFiles().obtenerIdFileTxt(nombre);
         String linea = "";
         String delimitante = "\\|";
-        String ruta = "/var/lib/tomcat9/webapps/ROOT/archivos/txt/" + nombre;
+        String ruta = "/ROOT/archivos/txt/" + nombre;
 
         Obligaciones obligacion = null;
         int guardarObliga = 0;
@@ -335,7 +335,7 @@ public class ServletControladorFiles extends HttpServlet {
         int idFileImagen = new DaoFiles().obtenerIdFileImg(idConsignacion);
 
         String nombreArchivo = new DaoFiles().obtenerNombreFile(idFileImagen);
-        String ruta = "archivos/img/" + nombreArchivo;
+        String ruta = "/ROOT/archivos/img/" + nombreArchivo;
 
         resp.setContentType("text/plain");
 
@@ -440,16 +440,16 @@ public class ServletControladorFiles extends HttpServlet {
         String nombreReporte = new DaoFiles().obtenerNombreReporte(idFile);
         switch (rol) {
             case "Administrador":
-                ruta = "archivos/reportes/Admin/" + nombreReporte;
+                ruta = "/ROOT/archivos/reportes/Admin" + nombreReporte;
                 break;
             case "Cartera":
-                ruta = "archivos/reportes/Cartera/" + nombreReporte;
+                ruta = "/ROOT/archivos/reportes/Cartera/" + nombreReporte;
                 break;
             case "Contabilidad":
-                ruta = "archivos/reportes/contabilidad/" + nombreReporte;
+                ruta = "/ROOT/archivos/reportes/Contabilidad/" + nombreReporte;
                 break;
             case "Caja":
-                ruta = "archivos/reportes/Caja/" + nombreReporte;
+                ruta = "/ROOT/archivos/reportes/Caja/" + nombreReporte;
                 break;
         }
 
@@ -482,16 +482,16 @@ public class ServletControladorFiles extends HttpServlet {
         String rol = new DaoRoles().obtenerRolUsuario(reporte.getEmail());
         switch (rol) {
             case "Administrador":
-                ruta = "archivos/reportes/Admin/" + reporte.getNombre_archivo();
+                ruta = "/ROOT/archivos/reportes/Admin/" + reporte.getNombre_archivo();
                 break;
             case "Cartera":
-                ruta = "archivos/reportes/Cartera/" + reporte.getNombre_archivo();
+                ruta = "/ROOT/archivos/reportes/Cartera/" + reporte.getNombre_archivo();
                 break;
             case "Contabilidad":
-                ruta = "archivos/reportes/Contabilidad/" + reporte.getNombre_archivo();
+                ruta = "/ROOT/archivos/reportes/Contabilidad/" + reporte.getNombre_archivo();
                 break;
             case "Caja":
-                ruta = "archivos/reportes/Caja/" + reporte.getNombre_archivo();
+                ruta = "/ROOT/archivos/reportes/reportes/Caja/" + reporte.getNombre_archivo();
                 break;
         }
 
